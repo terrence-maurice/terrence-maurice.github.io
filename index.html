@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..600&family=Instrument+Sans:ital,wght@0,400..600;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Bellota:ital,wght@1,400&family=Almendra+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=17">
+  <link rel="stylesheet" href="assets/style.css?v=18">
   <script>
     try { var l = localStorage.getItem('lang'); if (l === 'en' || l === 'cs') { document.documentElement.setAttribute('data-lang', l); document.documentElement.lang = l; } } catch (e) {}
   </script>
@@ -34,7 +34,18 @@
         <button type="button" data-set-lang="cs">CZ</button><span aria-hidden="true">/</span><button type="button" data-set-lang="en">EN</button>
       </div>
       <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">
-        <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+        <!-- ikonka menu: pruh 16mm filmu (políčka, perforace po obou okrajích), na výšku / menu icon: a strip of 16 mm film (frames, double-perf edges), standing upright -->
+        <svg class="menu-icon" viewBox="0 0 32 32" aria-hidden="true">
+          <defs><clipPath id="film-clip"><rect x="0.5" y="6.25" width="31" height="19.5"/></clipPath></defs>
+          <g transform="rotate(90 16 16)">
+          <path class="film-edge" d="M0.75 6.25H31.25M0.75 25.75H31.25"/>
+          <g clip-path="url(#film-clip)"><g class="film-run">
+            <rect class="film-perf" x="-8.3" y="8.2" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="0.2" y="8.2" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="8.7" y="8.2" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="17.2" y="8.2" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="25.7" y="8.2" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="34.2" y="8.2" width="2.2" height="2.4" rx="0.5"/>
+            <rect class="film-perf" x="-8.3" y="21.4" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="0.2" y="21.4" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="8.7" y="21.4" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="17.2" y="21.4" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="25.7" y="21.4" width="2.2" height="2.4" rx="0.5"/><rect class="film-perf" x="34.2" y="21.4" width="2.2" height="2.4" rx="0.5"/>
+            <rect class="film-frame" x="-6.25" y="12" width="6.6" height="8" rx="0.6"/><rect class="film-frame" x="2.25" y="12" width="6.6" height="8" rx="0.6"/><rect class="film-frame" x="10.75" y="12" width="6.6" height="8" rx="0.6"/><rect class="film-frame" x="19.25" y="12" width="6.6" height="8" rx="0.6"/><rect class="film-frame" x="27.75" y="12" width="6.6" height="8" rx="0.6"/><rect class="film-frame" x="36.25" y="12" width="6.6" height="8" rx="0.6"/>
+          </g></g>
+          </g>
+        </svg>
         <span class="sr-only">Menu</span>
       </button>
     </div>
