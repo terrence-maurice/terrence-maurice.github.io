@@ -147,7 +147,7 @@ var CHAPTERS = {
         works: [
           {
             title: { cs: 'Humří chlapec', en: 'Humří chlapec <span class="muted">(Lobster Boy)</span>' },
-            meta: { cs: 'Premiéra 2027', en: 'Premiere 2027' },
+            meta: { cs: '2025', en: '2025' },
             text: {
               cs: ['Klauzurní autorský film o klukovi, jenž má možná trochu moc starostlivé rodiče a plné zuby života ve vaně.'],
               en: ['An auteur klauzura film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub.']
