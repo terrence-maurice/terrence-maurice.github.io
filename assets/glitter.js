@@ -1,5 +1,5 @@
-/* Třpytivé pozadí (p5.js): navy zrno + stříbrné a modré flitry, které se lesknou při scrollování.
-   Glitter background (p5.js): navy grain + silver and blue flakes that catch the light as you scroll. */
+/* Třpytivé pozadí (p5.js): černé zrno + stříbrné a tmavě modré flitry, které se lesknou při scrollování.
+   Glitter background (p5.js): black grain + silver and dark-blue flakes that catch the light as you scroll. */
 (function () {
   'use strict';
   if (typeof p5 === 'undefined') return;
@@ -7,10 +7,10 @@
   if (!host) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // navy grain shades and flake colours
-  var NAVY = [[8, 13, 34], [11, 18, 46], [14, 24, 60], [18, 30, 76], [24, 40, 98], [10, 16, 40]];
+  // near-black grain shades (slight cool drift) and flake colours
+  var BLACK = [[4, 4, 5], [7, 7, 9], [10, 10, 12], [13, 13, 16], [6, 6, 8], [16, 16, 20]];
   var SILVER = [[236, 240, 246], [212, 218, 228], [190, 197, 210], [168, 178, 196]];
-  var BLUE = [[86, 118, 214], [64, 96, 196], [120, 150, 230]];
+  var BLUE = [[34, 64, 168], [24, 48, 140], [46, 84, 196], [18, 38, 112]];   // dark blue
 
   new p5(function (p) {
     var base, flakes = [], W, H, lastY = 0, energy = 0, resizeTimer = null;
@@ -23,13 +23,13 @@
       for (var y = 0; y < H; y += cell) {
         for (var x = 0; x < W; x += cell) {
           var c, r = Math.random();
-          if (r < 0.012) {                       // faint silver speck in the grain
-            c = SILVER[(Math.random() * SILVER.length) | 0];
+          if (r < 0.016) {                       // faint silver / dark-blue speck in the grain
+            c = r < 0.011 ? SILVER[(Math.random() * SILVER.length) | 0] : BLUE[(Math.random() * BLUE.length) | 0];
             var k = 0.35 + Math.random() * 0.25;
             c = [c[0] * k, c[1] * k, c[2] * k];
           } else {
-            c = NAVY[(Math.random() * NAVY.length) | 0];
-            var j = 0.62 + Math.random() * 0.42;  // brightness jitter = glitter grain (kept dark for text contrast)
+            c = BLACK[(Math.random() * BLACK.length) | 0];
+            var j = 0.7 + Math.random() * 0.6;    // brightness jitter = glitter grain (stays near-black for text contrast)
             c = [c[0] * j, c[1] * j, c[2] * j];
           }
           for (var dy = 0; dy < cell && y + dy < H; dy++) {
@@ -47,7 +47,7 @@
       flakes = [];
       var n = Math.round(Math.min(1400, (W * H) / 1800));
       for (var i = 0; i < n; i++) {
-        var silver = Math.random() < 0.72;
+        var silver = Math.random() < 0.66;
         var pal = silver ? SILVER : BLUE;
         flakes.push({
           x: Math.random() * W,
@@ -62,7 +62,7 @@
     }
 
     function setupSize() {
-      W = p.windowWidth; H = p.windowHeight;
+      W = Math.max(1, p.windowWidth); H = Math.max(1, p.windowHeight);   // a hidden/0-px window must not crash buildBase
       buildBase(); buildFlakes();
     }
 
@@ -89,7 +89,7 @@
     p.draw = function () {
       var sy = window.scrollY;
       var dy = sy - lastY; lastY = sy;
-      energy = Math.min(1, energy * 0.94 + Math.min(Math.abs(dy), 90) / 260);
+      energy = Math.min(1, energy * 0.94 + Math.min(Math.abs(dy), 90) / 220);
 
       // grain scrolls slowly with the page (parallax), tiled vertically
       var off = ((sy * 0.25) % H + H) % H;
@@ -101,6 +101,7 @@
       var light = t * 0.22 + sy * 0.0045;
       var sharp = 26 - energy * 16;                 // wider highlight while scrolling = more sparkle
       var gain = 0.55 + energy * 0.45;
+      var glintAt = 0.7 - energy * 0.22;           // more star glints while scrolling
       var foff = ((sy * 0.4) % H + H) % H;
 
       for (var i = 0; i < flakes.length; i++) {
@@ -118,7 +119,7 @@
         p.rect(-f.s / 2, -f.s / 2, f.s, f.s);
         p.pop();
         // brightest silver flakes get a small star glint
-        if (f.silver && g > 0.7) {
+        if (f.silver && g > glintAt) {
           var L = f.s * (3 + g * 4);
           p.stroke(240, 244, 250, a * 0.75);
           p.strokeWeight(0.8);

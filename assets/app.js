@@ -75,7 +75,7 @@
 
     return '' +
       '<section class="hero">' +
-        '<p class="kicker">' + L(a.role) + ' · ' + L(CONTACT.city) + '</p>' +
+        '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize - navzdy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
         '<h1 class="display-xl">Tereza<br>Muric</h1>' +
         '<p class="lead">' + L(a.lead) + '</p>' +
       '</section>' +
