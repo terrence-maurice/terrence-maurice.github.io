@@ -75,7 +75,7 @@
 
     return '' +
       '<section class="hero">' +
-        '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize - navzdy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
+        '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize – navždy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
         '<h1 class="display-xl">Tereza<br>Muric</h1>' +
         '<p class="lead"' + (typeof a.lead === 'string' ? ' lang="cs"' : '') + '>' + L(a.lead) + '</p>' +
       '</section>' +
@@ -105,7 +105,7 @@
 
   /* Galerie pohyblivého obrazu: všechna videa z ostatních kapitol (stejné soubory), seskupená podle roku sekce.
      Moving-image gallery: every video from the other chapters (same files), grouped by the year of the section it sits in. */
-  var GALERIE_TITLE = { cs: 'GALERIE POHYBLIVÉH OBRAZU', en: 'GALERIE POHYBLIVÉH OBRAZU' };
+  var GALERIE_TITLE = { cs: 'GALERIE POHYBLIVÉHO OBRAZU', en: 'GALERIE POHYBLIVÉHO OBRAZU' };
 
   function galleryChapter() {
     var byYear = {};
