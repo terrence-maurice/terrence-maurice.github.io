@@ -1,7 +1,7 @@
 /* Třpytivé pozadí (p5.js): černé zrno + stříbrné a tmavě modré flitry, které se lesknou při scrollování
-   a reagují na hrající nahrávku ze Zvuků Izmiru (assets/sound.js).
+   a reagují na hrající nahrávku ze Zvuků Izmiru (assets/sound.js): čím hlasitěji, tím víc hvězdiček vyskočí.
    Glitter background (p5.js): black grain + silver and dark-blue flakes that catch the light as you scroll
-   and react to the playing Sounds of Izmir recording (assets/sound.js). */
+   and react to the playing Sounds of Izmir recording (assets/sound.js): the louder it is, the more stars pop up. */
 (function () {
   'use strict';
   if (typeof p5 === 'undefined') return;
@@ -15,7 +15,7 @@
   var BLUE = [[34, 64, 168], [24, 48, 140], [46, 84, 196], [18, 38, 112]];   // dark blue
 
   new p5(function (p) {
-    var base, flakes = [], W, H, lastY = 0, energy = 0, swirl = 0, resizeTimer = null;
+    var base, flakes = [], pops = [], popDebt = 0, W, H, lastY = 0, energy = 0, resizeTimer = null;
 
     function buildBase() {
       base = p.createGraphics(W, H);
@@ -93,10 +93,10 @@
       var dy = sy - lastY; lastY = sy;
       energy = Math.min(1, energy * 0.94 + Math.min(Math.abs(dy), 90) / 220);
 
-      // sound (Zvuky Izmiru, assets/sound.js): bass = pulse + blue glow, mids = swirl, highs = silver flashes
+      // sound (Zvuky Izmiru, assets/sound.js): bass = pulse + blue glow, highs = silver flashes,
+      // loudness = glitter stars popping up at random spots (more stars the louder it is)
       var snd = window.SoundViz ? window.SoundViz.levels() : null;
-      var bass = snd ? snd.bass : 0, mid = snd ? snd.mid : 0, high = snd ? snd.high : 0;
-      if (mid > 0.02) swirl += mid * 0.018; else swirl *= 0.985;   // flakes drift back when the music stops
+      var bass = snd ? snd.bass : 0, high = snd ? snd.high : 0, loud = snd ? snd.level : 0;
       var spark = Math.min(1, Math.max(energy, high * 1.3));
 
       // grain scrolls slowly with the page (parallax), tiled vertically
@@ -111,7 +111,6 @@
       var gain = 0.55 + spark * 0.45;
       var glintAt = 0.7 - spark * 0.22 - high * 0.15;       // more star glints while scrolling / on highs
       var foff = ((sy * 0.4) % H + H) % H;
-      var cx = W / 2, cy = H / 2, dmax = Math.sqrt(cx * cx + cy * cy), swirling = Math.abs(swirl) > 0.0005;
 
       for (var i = 0; i < flakes.length; i++) {
         var f = flakes[i];
@@ -120,24 +119,39 @@
         g = Math.pow(g, sharp) * (gain + (f.silver ? high * 0.7 : bass * 1.2));
         if (g < 0.04) continue;
         var x = f.x, y = f.y - foff; if (y < 0) y += H;
-        if (swirling) {                                     // vortex around the middle, stronger near the centre
-          var ox = x - cx, oy = y - cy, ang = swirl * (1.25 - Math.sqrt(ox * ox + oy * oy) / dmax);
-          var ca = Math.cos(ang), sa = Math.sin(ang);
-          x = cx + ox * ca - oy * sa; y = cy + ox * sa + oy * ca;
-        }
         var s = f.s * (1 + bass * 1.1);
         var a = Math.min(255, g * 255);
         p.fill(f.c[0], f.c[1], f.c[2], a);
         p.push();
         p.translate(x, y);
-        p.rotate(f.rot + swirl);
+        p.rotate(f.rot);
         p.rect(-s / 2, -s / 2, s, s);
         p.pop();
         // brightest silver flakes get a twinkling glitter sparkle
         if (f.silver && g > glintAt) {
           var tw = 0.72 + 0.28 * Math.sin(t * 5.5 + f.a * 9);      // each star twinkles at its own rhythm
-          sparkle(x, y, s * (3 + g * 4) * tw, a, f.rot * 0.25 + swirl * 0.5);
+          sparkle(x, y, s * (3 + g * 4) * tw, a, f.rot * 0.25);
         }
+      }
+
+      // while a recording plays, glitter stars pop up at random spots; the louder the moment, the more of them
+      if (loud > 0.01) {
+        popDebt += Math.pow(loud, 1.6) * 7;                  // expected new stars this frame
+        while (popDebt >= 1 && pops.length < 140) {
+          popDebt -= 1;
+          pops.push({
+            x: Math.random() * W, y: Math.random() * H, born: t,
+            life: 0.35 + Math.random() * 0.75, size: 7 + Math.random() * 16 * (0.5 + loud),
+            rot: Math.random() * Math.PI
+          });
+        }
+        if (popDebt > 3) popDebt = 3;
+      }
+      for (var j = pops.length - 1; j >= 0; j--) {
+        var q = pops[j], age = (t - q.born) / q.life;
+        if (age >= 1) { pops.splice(j, 1); continue; }
+        var env = Math.sin(Math.PI * age);                     // flash in, fade out
+        sparkle(q.x, q.y, q.size * (0.35 + 0.65 * env), 255 * env, q.rot);
       }
     };
 
