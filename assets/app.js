@@ -215,11 +215,9 @@
     '</figure>';
   }
 
-  // `visual: true` adds the particle "sea of sound" and a waveform for each track (assets/sound.js)
+  // `visual: true` adds a waveform to each track and lets the glitter background react to the playing one (assets/sound.js)
   function audioList(a) {
-    var sea = a.visual ? '<div class="sound-sea" data-sound-sea><canvas aria-hidden="true"></canvas>' +
-      '<p class="sound-now" data-sound-now aria-live="polite">' + L({ cs: 'Pusťte si nahrávku', en: 'Play a recording' }) + '</p></div>' : '';
-    return sea + '<ol class="tracks"' + (a.visual ? ' data-sound-visual' : '') + '>' + a.tracks.map(function (t, i) {
+    return '<ol class="tracks"' + (a.visual ? ' data-sound-visual' : '') + '>' + a.tracks.map(function (t, i) {
       return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
         '<span class="track-name">' + L(t[1]) + '</span>' +
         '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + plain(t[1]) + '"></audio>' +

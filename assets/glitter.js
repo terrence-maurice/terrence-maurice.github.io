@@ -1,5 +1,7 @@
-/* Třpytivé pozadí (p5.js): černé zrno + stříbrné a tmavě modré flitry, které se lesknou při scrollování.
-   Glitter background (p5.js): black grain + silver and dark-blue flakes that catch the light as you scroll. */
+/* Třpytivé pozadí (p5.js): černé zrno + stříbrné a tmavě modré flitry, které se lesknou při scrollování
+   a reagují na hrající nahrávku ze Zvuků Izmiru (assets/sound.js).
+   Glitter background (p5.js): black grain + silver and dark-blue flakes that catch the light as you scroll
+   and react to the playing Sounds of Izmir recording (assets/sound.js). */
 (function () {
   'use strict';
   if (typeof p5 === 'undefined') return;
@@ -13,7 +15,7 @@
   var BLUE = [[34, 64, 168], [24, 48, 140], [46, 84, 196], [18, 38, 112]];   // dark blue
 
   new p5(function (p) {
-    var base, flakes = [], W, H, lastY = 0, energy = 0, resizeTimer = null;
+    var base, flakes = [], W, H, lastY = 0, energy = 0, swirl = 0, resizeTimer = null;
 
     function buildBase() {
       base = p.createGraphics(W, H);
@@ -91,6 +93,12 @@
       var dy = sy - lastY; lastY = sy;
       energy = Math.min(1, energy * 0.94 + Math.min(Math.abs(dy), 90) / 220);
 
+      // sound (Zvuky Izmiru, assets/sound.js): bass = pulse + blue glow, mids = swirl, highs = silver flashes
+      var snd = window.SoundViz ? window.SoundViz.levels() : null;
+      var bass = snd ? snd.bass : 0, mid = snd ? snd.mid : 0, high = snd ? snd.high : 0;
+      if (mid > 0.02) swirl += mid * 0.018; else swirl *= 0.985;   // flakes drift back when the music stops
+      var spark = Math.min(1, Math.max(energy, high * 1.3));
+
       // grain scrolls slowly with the page (parallax), tiled vertically
       var off = ((sy * 0.25) % H + H) % H;
       p.image(base, 0, -off);
@@ -98,36 +106,43 @@
 
       // light direction sweeps with scroll position and time -> flakes flash
       var t = p.millis() / 1000;
-      var light = t * 0.22 + sy * 0.0045;
-      var sharp = 26 - energy * 16;                 // wider highlight while scrolling = more sparkle
-      var gain = 0.55 + energy * 0.45;
-      var glintAt = 0.7 - energy * 0.22;           // more star glints while scrolling
+      var light = t * 0.22 + sy * 0.0045 + high * 0.35 * Math.sin(t * 9);
+      var sharp = Math.max(4, 26 - spark * 16 - bass * 8);   // wider highlight while scrolling / on bass = more sparkle
+      var gain = 0.55 + spark * 0.45;
+      var glintAt = 0.7 - spark * 0.22 - high * 0.15;       // more star glints while scrolling / on highs
       var foff = ((sy * 0.4) % H + H) % H;
+      var cx = W / 2, cy = H / 2, dmax = Math.sqrt(cx * cx + cy * cy), swirling = Math.abs(swirl) > 0.0005;
 
       for (var i = 0; i < flakes.length; i++) {
         var f = flakes[i];
         var g = Math.cos(f.a - light + Math.sin(t * 0.7 + f.x * 0.01) * 0.25);
         if (g <= 0) continue;
-        g = Math.pow(g, sharp) * gain;
+        g = Math.pow(g, sharp) * (gain + (f.silver ? high * 0.7 : bass * 1.2));
         if (g < 0.04) continue;
-        var y = f.y - foff; if (y < 0) y += H;
+        var x = f.x, y = f.y - foff; if (y < 0) y += H;
+        if (swirling) {                                     // vortex around the middle, stronger near the centre
+          var ox = x - cx, oy = y - cy, ang = swirl * (1.25 - Math.sqrt(ox * ox + oy * oy) / dmax);
+          var ca = Math.cos(ang), sa = Math.sin(ang);
+          x = cx + ox * ca - oy * sa; y = cy + ox * sa + oy * ca;
+        }
+        var s = f.s * (1 + bass * 1.1);
         var a = Math.min(255, g * 255);
         p.fill(f.c[0], f.c[1], f.c[2], a);
         p.push();
-        p.translate(f.x, y);
-        p.rotate(f.rot);
-        p.rect(-f.s / 2, -f.s / 2, f.s, f.s);
+        p.translate(x, y);
+        p.rotate(f.rot + swirl);
+        p.rect(-s / 2, -s / 2, s, s);
         p.pop();
         // brightest silver flakes get a small star glint
         if (f.silver && g > glintAt) {
-          var L = f.s * (3 + g * 4);
+          var L = s * (3 + g * 4);
           p.stroke(240, 244, 250, a * 0.75);
           p.strokeWeight(0.8);
-          p.line(f.x - L, y, f.x + L, y);
-          p.line(f.x, y - L, f.x, y + L);
+          p.line(x - L, y, x + L, y);
+          p.line(x, y - L, x, y + L);
           p.noStroke();
           p.fill(255, 255, 255, a * 0.18);
-          p.circle(f.x, y, L * 0.9);
+          p.circle(x, y, L * 0.9);
         }
       }
     };
