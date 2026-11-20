@@ -200,8 +200,8 @@ var CHAPTERS = {
             title: 'Nuke – beginner level comp artist',
             video: { src: M + 'famu-cas/2025-erasmus/nuke-showreel.mp4', poster: M + 'famu-cas/2025-erasmus/nuke-showreel.webp' },
             text: {
-              cs: ['Showreel vznikl během Erasmu na IEU v Izmiru v rámci mentoringu pod vedením industry comp artista Leventa Hasekiho, v předmětu Digital Image Compositing Techniques and Special Effects (CDM 304).'],
-              en: ['The showreel was made during the Erasmus exchange at IEU Izmir, under the mentorship of industry comp artist Levent Haseki, in the course Digital Image Compositing Techniques and Special Effects (CDM 304).']
+              cs: ['Showreel představuje compositingové práce vytvořené v zimním semestru 2025 během studijního pobytu Erasmus+ na Izmir University of Economics, obor Cinema and Digital Media. Práce vznikly pod mentorským vedením Leventa Hasekiho, profesionálního compositora z filmové praxe, v rámci předmětu Digital Image Compositing Techniques and Special Effects (CDM 304). Vizuální efekty byly vytvořeny v nekomerční verzi programu Nuke.'],
+              en: ['The showreel presents compositing work produced in the Fall Semester 2025 during an Erasmus+ study exchange at Izmir University of Economics, Cinema and Digital Media. The work was created under the mentorship of Levent Haseki, an industry compositing artist, as part of the course Digital Image Compositing Techniques and Special Effects (CDM 304). The visual effects were created in the non-commercial version of Nuke.']
             }
           },
           {
