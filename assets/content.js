@@ -31,7 +31,7 @@ var ABOUT = {
     { title: { cs: 'Light instalace', en: 'Light installation' },
       text: { cs: 'se světlomety auta Škoda Felicia a banery technického průkazu z 90. let<br><strong>FAMU FEST</strong>, březen 2025, Holešovická šachta',
               en: 'with the headlights of a Škoda Felicia car and banners of a 1990s vehicle registration document<br><strong>FAMU FEST</strong>, March 2025, Holešovická šachta' } },
-    { title: { cs: 'Mutanti Infranetu 1.0', en: 'Mutanti Infranetu 1.0' },
+    { title: { cs: 'Mutanti Infranetu 2.0', en: 'Mutanti Infranetu 2.0' },
       text: { cs: 'klauzurní výstava CAS, <strong>GAMU</strong>', en: 'CAS klauzura exhibition, <strong>GAMU</strong>' } },
     { title: { cs: 'Národní filmové muzeum NaFilm', en: 'National Film Museum NaFilm' },
       text: { cs: 'operátor filmu ve VR, průvodce', en: 'VR film operator, guide' } },
