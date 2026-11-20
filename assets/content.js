@@ -66,7 +66,7 @@ var CHAPTERS = {
             textTitle: { cs: '<strong>The Great Glitch Paradox:</strong> <em>When You Become The Porn You Are Watching</em>',
                          en: '<strong>The Great Glitch Paradox:</strong> <em>When You Become The Porn You Are Watching</em>' },
             text: {
-              cs: ['<strong>The Great Glitch Paradox</strong> pojednává o fiktivní budoucnosti naší planety. Pracuje s konceptem, který se ke mě dostavil až po začátku vytváření 3D objektů (hlavních postav ve videu) za pomocí online 3D generátoru z 2D obrázku <em>3d.csm.ai</em>.<sup>1</sup> Jedná se o motiv, který bych chtěla v budoucnu rozpracovat do komiksové podoby.'],
+              cs: ['<strong>The Great Glitch Paradox</strong> pojednává o fiktivní budoucnosti naší planety. Pracuje s konceptem, který se ke mně dostavil až po začátku vytváření 3D objektů (hlavních postav ve videu) za pomocí online 3D generátoru z 2D obrázku <em>3d.csm.ai</em>.<sup>1</sup> Jedná se o motiv, který bych chtěla v budoucnu rozpracovat do komiksové podoby.'],
               en: ['<strong>The Great Glitch Paradox</strong> deals with a fictional future of our planet. It works with a concept that came to me only after I had started creating the 3D objects (the main characters of the video) with <em>3d.csm.ai</em>, an online generator that turns 2D images into 3D.<sup>1</sup> It is a motif I would like to develop into a comic in the future.']
             },
             more: {
@@ -74,7 +74,7 @@ var CHAPTERS = {
                 'Samotní mutanti vznikli ze snímků obrazovky různých druhů porno videí. Napadlo mě, že by bylo vtipné pozorovat, jak si generativní AI pohraje s takovým materiálem. Některé oplzlosti prošly, jiné musely být více skryté. Také to něco říká o tom, jak lidé tento systém naprogramovali, aby rozeznával a prostorově dotvářel lidská těla a tváře z 2D obrázků - s tím rozdílem, že ještě musel domodelovávat lidskou nahotu a nevědomky tím ovlivňovat náš pohled na sexuální pozice a sexualitu obecně. Jak vypadají lidé, co mají sex nebo jsou v sexuální situaci?',
                 'V úvodu videa promlouvá nám dobře známý vysvětlivkový narátor ze špatných fantasy nebo sci-fi filmů, který vždy má co objasňovat, ještě než film stačí začít. Jedná se o hommage a nadsázku narátorskému fenoménu “uvaděčů”.',
                 'Video na pozadí v první polovině filmu bylo natočeno na telefon u pankráckých mrakodrapů, stejně i ruch dětského smíchu. Ostatní videa jsou záběry z Černobylu - šlo mi o to, aby diváctvo tuto skutečnost nepoznalo. Potřebovala jsem prázdná a opuštěná místa. Další aspekt, zároveň klíčový pro sluchovou stimulaci, byl zvuk krkavého praskání. Opět nahráno na telefon, můj hlas (vzduch deroucí se ven z bránice). Hudba v pozadí druhé části je Queen z gramofonu zapojeného do basového pedálu, autorem je Jakub Kolář.',
-                'Printy nebo plakátky po stranách a nad obrazovkou jsou texturami zobrazených objektů. Některé s mým drobných zásahem, ale většina bez. Je to propojení se světem za pixely. S něčím abstraktním, čeho se nemůžeme dotknout a nezbývá než jen hledět a poslouchat. Chtěla jsem tím diváctvo více vtáhnout do světa mutantů, nebo jen do toho chvilkového zážitku, a zhmotnit ho pro ně, aby si jej mohli odnést domů nebo si s ním dělat, co by si přáli oni.',
+                'Printy nebo plakátky po stranách a nad obrazovkou jsou texturami zobrazených objektů. Některé s mým drobným zásahem, ale většina bez. Je to propojení se světem za pixely. S něčím abstraktním, čeho se nemůžeme dotknout a nezbývá než jen hledět a poslouchat. Chtěla jsem tím diváctvo více vtáhnout do světa mutantů, nebo jen do toho chvilkového zážitku, a zhmotnit ho pro ně, aby si jej mohli odnést domů nebo si s ním dělat, co by si přáli oni.',
                 'Objekty ležící pod televizí jsou relikviemi mého života, jsou tam pro můj osobní perverzní pocit, netouží po tom být pochopeny. I když některé by s tím možná nesouhlasily. Mají přeci jen všechny něco společného. Čas. Jsou zosobněním ubíhajícího času…svým způsobem. Kde se nachází budoucnost, o které video pojednává? - Za - uběhnutým časem. Tedy až se onen čas rozplyne, přijde obávaná budoucnost, jen s tím rozdílem, že jí už budeme říkat trochu jinak.',
                 '<small><sup>1</sup> Stránka dnes již neexistuje.</small>'
               ],
@@ -100,7 +100,7 @@ var CHAPTERS = {
         year: '2024', season: { cs: 'Zimní klauzura', en: 'Winter klauzura' },
         works: [
           {
-            title: { cs: 'Smrt auta, který s námi vyrůstalo', en: 'Death of the car that grew up with us' },
+            title: { cs: 'Smrt auta, které s námi vyrůstalo', en: 'Death of the car that grew up with us' },
             galleries: [
               { title: null,
                 base: M + 'famu-cas/2024-zimni/smrt-auta/',
