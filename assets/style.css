@@ -67,14 +67,12 @@ main, .site-foot { position: relative; z-index: 1; }
 .lang button { color: var(--muted); padding: 4px 2px; letter-spacing: 0.06em; }
 .lang button[aria-pressed="true"] { color: var(--fg); text-decoration: underline; text-underline-offset: 0.25em; }
 .lang button:hover { color: var(--fg); }
-.menu-btn { width: 44px; height: 44px; display: grid; place-items: center; }
+.menu-btn { width: 48px; height: 54px; display: grid; place-items: center; }
 /* menu icon: a strip of 16 mm film; on hover it advances frame by frame like in a projector */
-.menu-icon { display: block; width: 36px; height: 36px; overflow: visible; }
-.menu-icon .film-edge { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linecap: round; }
-.menu-icon .film-perf { fill: var(--fg); }
-.menu-icon .film-frame { fill: none; stroke: var(--fg); stroke-width: 1.2; }
+.menu-icon { display: block; width: 38px; height: 50px; overflow: visible; }
+.menu-icon .film-line { fill: none; stroke: var(--fg); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .menu-btn:hover .film-run, .menu-btn:focus-visible .film-run { animation: film-pull .42s cubic-bezier(.5, 0, .3, 1) infinite; }
-@keyframes film-pull { 0% { transform: translateX(0); } 55%, 100% { transform: translateX(-8.5px); } }
+@keyframes film-pull { 0% { transform: translateY(0); } 55%, 100% { transform: translateY(-13.5px); } }
 
 /* ---------- side menu ---------- */
 .menu-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,0.6); opacity: 0; transition: opacity .35s ease; }
