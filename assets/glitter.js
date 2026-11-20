@@ -130,7 +130,7 @@
         // brightest silver flakes get a twinkling glitter sparkle
         if (f.silver && g > glintAt) {
           var tw = 0.8 + 0.2 * Math.sin(t * 1.8 + f.a * 9);      // each star twinkles at its own rhythm
-          sparkle(x, y, s * (2 + g * 2.2) * tw, a, f.rot * 0.25);
+          sparkle(x, y, s * (3 + g * 4) * tw, a, f.rot * 0.25);
         }
       }
 
@@ -141,7 +141,7 @@
           popDebt -= 1;
           pops.push({
             x: Math.random() * W, y: Math.random() * H, born: t,
-            life: 1.6 + Math.random() * 2.0, size: 3 + Math.random() * 5 * (0.5 + loud),
+            life: 1.6 + Math.random() * 2.0, size: 6 + Math.random() * 11 * (0.5 + loud),
             rot: Math.random() * Math.PI, spin: 0.03 + Math.random() * 0.03   // rad/s around the centre of the screen
           });
         }
@@ -153,13 +153,12 @@
         var env = Math.sin(Math.PI * age);                     // flash in, fade out
         var ang = q.spin * (t - q.born), ca = Math.cos(ang), sa = Math.sin(ang);   // a gentle swirl while it lives
         var ox = q.x - W / 2, oy = q.y - H / 2;
-        sparkle(W / 2 + ox * ca - oy * sa, H / 2 + ox * sa + oy * ca, q.size * (0.35 + 0.65 * env), 170 * env, q.rot + ang * 2);
+        sparkle(W / 2 + ox * ca - oy * sa, H / 2 + ox * sa + oy * ca, q.size * (0.35 + 0.65 * env), 220 * env, q.rot + ang * 2);
       }
     };
 
     // a glitter star: tight layered glow, four tapered needle rays and four shorter, bluish diagonal rays
     function sparkle(x, y, L, a, rot) {
-      L = Math.min(L, 12);                                    // small stars only, no big crosses
       p.push();
       p.translate(x, y);
       p.rotate(rot);
@@ -167,10 +166,10 @@
       p.fill(235, 242, 255, a * 0.14); p.circle(0, 0, L * 0.45);
       p.fill(255, 255, 255, a * 0.5);  p.circle(0, 0, L * 0.16);
       var w = Math.max(0.45, L * 0.045);
-      p.fill(248, 250, 255, a * 0.7);
+      p.fill(248, 250, 255, a * 0.9);
       for (var k = 0; k < 4; k++) { p.triangle(0, -w, L, 0, 0, w); p.rotate(Math.PI / 2); }
       p.rotate(Math.PI / 4);
-      var d = L * 0.55;
+      var d = L * 0.42;
       p.fill(190, 208, 255, a * 0.55);
       for (var m = 0; m < 4; m++) { p.triangle(0, -w * 0.7, d, 0, 0, w * 0.7); p.rotate(Math.PI / 2); }
       p.pop();
