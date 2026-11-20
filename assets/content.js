@@ -11,7 +11,10 @@ var CONTACT = {
 var ABOUT = {
   role: { cs: 'Vizuální umělec, filmař', en: 'Visual artist, filmmaker' },
   // bio jen česky (text od autorky); zobrazuje se i v EN režimu, dokud nedodá anglickou verzi
-  lead: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií, ať už v galerijním prostředí nebo v projekci. Je důležité odkazovat na kořeny pohyblivého obrazu a dění v současné radikalizující se společnosti.',
+  lead: {
+    cs: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií, ať už v galerijním prostředí nebo v projekci. Je důležité odkazovat na kořeny pohyblivého obrazu a dění v současné radikalizující se společnosti.',
+    en: 'Visual artist and filmmaker from Prague. I am fascinated by applying 20th-century music video aesthetics to film storytelling, and by exploring the relationships between technology, the tool and us. I work with an aesthetic that fuses old and contemporary media, whether in a gallery setting or in projection. It is important to refer to the roots of the moving image and to what is happening in today’s radicalising society.'
+  },
   study: [
     { title: 'FAMU CAS', when: { cs: '2023–dnes', en: '2023–present' },
       text: { cs: 'Bakalářské studium (BcA.)', en: 'Bachelor studies (BcA.)' } },
@@ -25,12 +28,12 @@ var ABOUT = {
       text: { cs: 'pod industry comp artist <strong>Levent Haseki</strong> (IEU Izmir)', en: 'under industry comp artist <strong>Levent Haseki</strong> (IEU Izmir)' } },
     { title: { cs: 'Humří chlapec <span class="muted">(2025)</span>', en: 'Humří chlapec / Lobster Boy <span class="muted">(2025)</span>' },
       text: { cs: 'klauzurní autorský film o klukovi, jenž má možná trochu moc starostlivé rodiče a plné zuby života ve vaně',
-              en: 'an auteur klauzura film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub' } },
+              en: 'an auteur end-of-semester film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub' } },
     { title: { cs: 'Light instalace', en: 'Light installation' },
       text: { cs: 'se světlomety auta Škoda Felicia a banery technického průkazu z 90. let<br><strong>FAMU FEST</strong>, březen 2025, Holešovická šachta',
               en: 'with the headlights of a Škoda Felicia car and banners of a 1990s vehicle registration document<br><strong>FAMU FEST</strong>, March 2025, Holešovická šachta' } },
-    { title: { cs: 'Mutanti Infranetu 2.0', en: 'Mutanti Infranetu 2.0' },
-      text: { cs: 'klauzurní výstava CAS, <strong>GAMU</strong>', en: 'CAS klauzura exhibition, <strong>GAMU</strong>' } },
+    { title: { cs: 'Mutanti Infranetu 2.0', en: 'Mutanti Infranetu 2.0 <span class="muted">(Infranet Mutants 2.0)</span>' },
+      text: { cs: 'klauzurní výstava CAS, <strong>GAMU</strong>', en: 'CAS end-of-semester exhibition, <strong>GAMU</strong>' } },
     { title: { cs: 'Národní filmové muzeum NaFilm', en: 'National Film Museum NaFilm' },
       text: { cs: 'operátor filmu ve VR, průvodce', en: 'VR film operator, guide' } },
     { title: { cs: 'Scénograf a rekvizitář', en: 'Set designer and props master' },
@@ -58,10 +61,10 @@ var CHAPTERS = {
     title: { cs: 'FAMU CAS', en: 'FAMU CAS' },
     sections: [
       {
-        year: '2023', season: { cs: 'Zimní klauzura', en: 'Winter klauzura' },
+        year: '2023', season: { cs: 'Zimní klauzura', en: 'Winter end-of-semester exam' },
         works: [
           {
-            title: { cs: 'Mutanti Infranetu 2.0', en: 'Mutanti Infranetu 2.0' },
+            title: { cs: 'Mutanti Infranetu 2.0', en: 'Mutanti Infranetu 2.0 <span class="muted">(Infranet Mutants 2.0)</span>' },
             video: { src: M + 'famu-cas/2023-zimni/mutanti-infranetu-2-0.mp4', poster: M + 'famu-cas/2023-zimni/mutanti-infranetu-2-0.webp' },
             textTitle: { cs: '<strong>The Great Glitch Paradox:</strong> <em>When You Become The Porn You Are Watching</em>',
                          en: '<strong>The Great Glitch Paradox:</strong> <em>When You Become The Porn You Are Watching</em>' },
@@ -97,7 +100,7 @@ var CHAPTERS = {
         ]
       },
       {
-        year: '2024', season: { cs: 'Zimní klauzura', en: 'Winter klauzura' },
+        year: '2024', season: { cs: 'Zimní klauzura', en: 'Winter end-of-semester exam' },
         works: [
           {
             id: 'smrt-auta',
@@ -109,8 +112,9 @@ var CHAPTERS = {
                 base: M + 'famu-cas/2024-zimni/smrt-auta/',
                 images: ['img-9476', 'img-9477', 'img-9487', 'img-9489'] }
             ],
-            // text autorky (jen česky), stránka #/text/smrt-auta / the author's text (Czech only)
-            page: [
+            // text autorky (CZ originál, EN překlad), stránka #/text/smrt-auta / the author's text (Czech original, English translation)
+            page: {
+              cs: [
               '<h1 class="text-main">SMRT AUTA CO S NÁMA VYRŮSTALO</h1>',
               '<p class="text-place">Libeňská synagoga, zimní klauzury 2024/2025</p>',
               '<p class="text-credit"><strong>ELEKTROTECHNICI:</strong> Jiří a Václav Muric</p>',
@@ -127,12 +131,31 @@ var CHAPTERS = {
               '<p><strong>Škoda Felicia</strong> je osobní automobil, který v letech 1994–2001 vyráběla automobilka Škoda Auto. Jednalo se o model, na kterém se velmi projevilo začlenění automobilky do koncernu Volkswagen, např. zavedením výrobních specifikací, definovaných bázovým modelem a systémem indexů mimořádných výbav. Koncepčně vůz vycházel z předchozího modelu Škoda Favorit, jeho design byl však pokročilejší, vůz byl osazován různými typy motorů a byl výrazně spolehlivější. Oproti modelu Favorit byly zavedeny do vybraných verzí některé nové prvky jako ABS, posilovač řízení aj. Jméno Felicia továrna převzala od předchozího sportovního modelu Felicia vyráběného v 60. letech 20. století ve verzích s pevnou nebo skládací střechou.</p>',
               '<blockquote class="text-cite"><p>(6) Felicia znamenala v roce 1994 první výrazný krok Škodovky k moderním automobilům schopným konkurence nejen ve střední Evropě, ale i na těch nejnáročnějších trzích. V roce 1991, po vstupu Volkswagenu do státem vlastněné automobilky, se postupně začalo pracovat na mnoho let trvající přestavbě prakticky všeho, co se v Mladé Boleslavi dělalo. Novinky v produkci na sebe zpočátku nechávaly čekat, ale německý spoluvlastník ujišťoval všechny škarohlídy, že se ze Škodovky nestane jen montážní závod zastaralých automobilů určených jen pro východ Evropy. Modelový rok 1993 byl v Boleslavi ve znamení 548 změn provedených na Favoritu a v roce 1994 to přišlo. Zcela „nový“ automobil nesl staronové jméno Felicia, které Škodovka použila u kabrioletu ze 60. let. Ve skutečnosti nešlo o automobil úplně nový, ale spíše o důkladně přepracovaný Favorit, kterému v té době táhlo na sedmý rok života. K takovému postupu přivedlo manažery zřejmě více argumentů. V prvé řadě byl o Favority stále poměrně velký zájem, a to i přes velkou inflaci na počátku 90. let (v řádu desítek procent), která znamenala zdražování prakticky všeho včetně Škodovek. Na druhou stranu základní koncepce a proporce Favorita byly dobrým základem pro časově i finančně méně náročné změny. Vývoj automobilů samozřejmě musel respektovat ekonomickou situaci obyvatel České republiky, protože ti tvoří až dodnes nejpodstatnější skupinu zákazníků. Škoda Auto poměrně stabilně drží přibližně 50&nbsp;% trhu s novými automobily (platné k roku 2010). –<br><span class="text-source">LÁNÍK, Ondřej. <em>Škoda Felicia – Felda</em> [online]. auto.cz, 2003-05-21 [cit. 2025-02-03].</span></p></blockquote>',
               '<p>Výroba typu Felicia byla ukončena 20. června 2001, kdy v 9:25 hodin ráno vyjel vůz Felicia LX 1,9D bílá s číslem karosérie 7 367 379. Následníkem modelu se stala Škoda Fabia.</p>'
+            ],
+            en: [
+              '<h1 class="text-main">THE DEATH OF THE CAR THAT GREW UP WITH US</h1>',
+              '<p class="text-place">Libeň Synagogue, winter end-of-semester exams 2024/2025</p>',
+              '<p class="text-credit"><strong>ELECTRICAL ENGINEERS:</strong> Jiří and Václav Muric</p>',
+              '<p class="text-credit"><strong>CONCEPT, VISUALISATION, GRAPHICS:</strong> Tereza Muric</p>',
+              '<p class="text-credit"><strong>WORKSHOP:</strong> Ekologie tvorby (Ecology of Creation), Georgy Bagdasarov</p>',
+              '<p>The LIGHT INSTALLATION with the headlights of a <em>Škoda Felicia</em> car, which my parents bought in 2009, is based on the aestheticisation of the original VEHICLE REGISTRATION DOCUMENT from 1997, which, enlarged to larger than life and graphically reworked, towers above the exhibit. The object recalls the role of the Felicia in national identity as well as in personal experience.</p>',
+              '<p class="text-quote"><em>“We rode in it for part of our childhood and all of our adolescence. It was mainly Mum’s car; she drove us wherever we needed to go when Dad was away for work for long stretches. Now we are grown up and it is mostly my brother Václav who drives it...after he had tuned up his little car and it had become his for good, one morning, years later, our mum borrowed it again...the car crashed in November 2024. At the same time I myself, the author, had a crash in August 2023, and since then I have had a recurring phobia of operating machines. So it is rather ironic that I am making an installation about a machine that frightens me. Perhaps it is a kind of tribute to a symbol of our family and childhood, perhaps it is a way of coming to terms with the trauma of crashing, and perhaps a rite of passage, a kind of funeral for our machine, in which the registration document – its birth certificate, if you like – becomes a kind of death notice. A chronicle of the life of this machine, and together with it, of us.”</em></p>',
+              '<p>The aestheticisation of official documents, or administrative aesthetics, goes back in our region to the 1970s and 1980s, when this form was widely used. What is administrative aesthetics? In America it was taken up by the conceptual art of the 1960s. It pretends to renounce any visual representation. It wants to reduce itself to mere linguistic expression. At the same time, however, it does take on an aesthetic – that of administration. I like that from something that is meant to be boring, clear, functional and orderly, and above all to serve its purpose, we can create something that has its own value and its own context, apart from the one forcibly given to it by some institution. The theorist of modern and contemporary art Karel Císař argues that at the turn of the 1960s and 1970s there was a certain type of work that transformed art and made its existence possible. What type of work makes conceptual art possible? He does not see conceptual art merely as a simple reaction to existing forms of art, but also as a type of art made possible by certain changes in the sphere of work (Císař, Karel. <em>Od administrativní estetiky k institucionální kritice?</em> [From Administrative Aesthetics to Institutional Critique?] <a href="https://artlist.cz/" target="_blank" rel="noopener">Artlist — Centrum pro současné umění Praha</a>, 2016. 2:23–2:53.).</p>',
+              '<p>When conceptual art is commonly interpreted, it is thought of as a reaction to certain tendencies, e.g. a certain formalism in American art of the 1950s and 1960s – that is, as a necessary reaction. Others speak of conceptualism as a global phenomenon; in their eyes, all art from a certain point on is conceptual. A narrower definition may be that conceptual art is art that fundamentally works with some kind of language. Karel Císař refers to the 1989 text by Benjamin H. D. Buchloh <em>Conceptual Art 1962 – 1969: From the Aesthetic of Administration to the Critique of Institution</em>, in which the author tried to write a history of conceptual art as a historical phenomenon. Buchloh argues that the position from which conceptual art speaks is essential. He writes about it some 20 years after conceptual art was at its most prominent, which gives him a historical perspective. The text was written from the position of conceptual art’s defeat. It is also a reaction to minimalism (in my case the response is maximalism and kitsch). The use of formal means instead of classic exhibition ones. This creates a language of communication with visitors that is more intimate. Artists come up with something new, but at the same time they also positively take on something from historical tradition, which, according to Buchloh, is very important.</p>',
+              '<p>For example, the minimalist work by Sol LeWitt, Untitled (Red Square, White Letters), 1962, performatively deals with what its viewer experiences in front of it. The viewer has to read the work (there is text in it), but at the same time has to see it. Modernist self-reflection? It shows the thing as it is.</p>',
+              '<p>Robert Morris. Untitled (<em>Statement of Aesthetic Withdrawal</em>), 1963. The work originally had aesthetic value, but he (the author) stripped it of that value with this statement.</p>',
+              '<p><strong>I want to give my work that aesthetic value. Something (the registration document) that was always practical and today looks completely different is suddenly put on display, just because it is a kind of relic of an old order of how things worked.</strong> Isn’t that a very basic principle of how museums work? I enjoy exhibiting everyday objects outside their original context.</p>',
+              '<h2 class="text-head">ŠKODA FELICIA COMBI (facelift)</h2>',
+              '<p>The <strong>Škoda Felicia</strong> is a passenger car produced by Škoda Auto from 1994 to 2001. It was a model that clearly showed the carmaker’s integration into the Volkswagen group, for example through the introduction of production specifications defined by a base model and a system of special-equipment codes. Conceptually the car was based on the previous Škoda Favorit model, but its design was more advanced, it was fitted with various types of engines and it was considerably more reliable. Compared with the Favorit, some new features such as ABS and power steering were introduced in selected versions. The factory took the name Felicia from an earlier sports model, the Felicia, produced in the 1960s with a fixed or folding roof.</p>',
+              '<blockquote class="text-cite"><p>(6) In 1994 the Felicia marked Škoda’s first significant step towards modern cars able to compete not only in Central Europe but also in the most demanding markets. In 1991, after Volkswagen entered the state-owned carmaker, work gradually began on a reconstruction, lasting many years, of practically everything that was done in Mladá Boleslav. New products were slow to come at first, but the German co-owner assured all the sceptics that Škoda would not become just an assembly plant for outdated cars intended only for Eastern Europe. Model year 1993 in Boleslav was marked by 548 changes made to the Favorit, and in 1994 it came. The completely “new” car bore the old-new name Felicia, which Škoda had used for a convertible in the 1960s. In reality it was not an entirely new car, but rather a thoroughly reworked Favorit, which at that time was approaching its seventh year. The managers were probably led to this approach by several arguments. First of all, there was still considerable interest in the Favorit, even despite high inflation in the early 1990s (in the tens of percent), which meant that practically everything became more expensive, including Škoda cars. On the other hand, the basic concept and proportions of the Favorit were a good basis for changes that were less demanding in time and money. The development of cars naturally had to respect the economic situation of the people of the Czech Republic, as they remain the most important group of customers to this day. Škoda Auto fairly steadily holds approximately 50% of the new-car market (as of 2010). –<br><span class="text-source">LÁNÍK, Ondřej. <em>Škoda Felicia – Felda</em> [online]. auto.cz, 2003-05-21 [cited 2025-02-03].</span></p></blockquote>',
+              '<p>Production of the Felicia ended on 20 June 2001, when at 9:25 a.m. a white Felicia LX 1.9D with body number 7 367 379 rolled off the line. The model was succeeded by the Škoda Fabia.</p>'
             ]
+            }
           }
         ]
       },
       {
-        year: '2024', season: { cs: 'Letní klauzura', en: 'Summer klauzura' },
+        year: '2024', season: { cs: 'Letní klauzura', en: 'Summer end-of-semester exam' },
         works: [
           {
             title: { cs: 'BREJLE PROJECT', en: 'BREJLE PROJECT' },
@@ -143,7 +166,7 @@ var CHAPTERS = {
             video: { src: M + 'famu-cas/2024-letni/pajim.mp4', poster: M + 'famu-cas/2024-letni/pajim.webp' }
           },
           {
-            title: { cs: 'Dokument – Slávy otec', en: 'Documentary – Slávy otec' },
+            title: { cs: 'Dokument – Slávy otec', en: 'Documentary – Slávy otec <span class="muted">(Sláva&rsquo;s Father)</span>' },
             video: { src: M + 'famu-cas/2024-letni/dokument-slavy-otec.mp4', poster: M + 'famu-cas/2024-letni/dokument-slavy-otec.webp' }
           },
           {
@@ -165,14 +188,14 @@ var CHAPTERS = {
         ]
       },
       {
-        year: '2025', season: { cs: 'Letní klauzura', en: 'Summer klauzura' },
+        year: '2025', season: { cs: 'Letní klauzura', en: 'Summer end-of-semester exam' },
         works: [
           {
             title: { cs: 'Humří chlapec', en: 'Humří chlapec <span class="muted">(Lobster Boy)</span>' },
             meta: { cs: '2025', en: '2025' },
             text: {
               cs: ['Klauzurní autorský film o klukovi, jenž má možná trochu moc starostlivé rodiče a plné zuby života ve vaně.'],
-              en: ['An auteur klauzura film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub.']
+              en: ['An auteur end-of-semester film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub.']
             },
             galleries: [
               { title: { cs: 'Stills z filmu', en: 'Film stills' },
@@ -214,7 +237,7 @@ var CHAPTERS = {
                 ['body-positivity-for-mein-herr', 'Body positivity for Mein Herr'],
                 ['fahretin-altay-song', 'Fahretin Altay song'],
                 ['izmir-tram', 'Izmir tram'],
-                ['modlitba-pro-izmir', 'Modlitba pro Izmir'],
+                ['modlitba-pro-izmir', { cs: 'Modlitba pro Izmir', en: 'Modlitba pro Izmir (Prayer for Izmir)' }],
                 ['rain', 'Rain'],
                 ['u-r-a-person-u-r-not-a-reflection', 'U R a person, U R NOT a reflection'],
                 ['washing-machine', 'Washing machine'],
@@ -238,7 +261,7 @@ var CHAPTERS = {
             video: { src: M + 'volna-tvorba/2022/horny-cousin-eme.mp4', poster: M + 'volna-tvorba/2022/horny-cousin-eme.webp' }
           },
           {
-            title: { cs: 'Manifest bolesti – záznam', en: 'Manifest bolesti – recording' },
+            title: { cs: 'Manifest bolesti – záznam', en: 'Manifest bolesti <span class="muted">(Manifesto of Pain)</span> – recording' },
             videos: [
               { src: M + 'volna-tvorba/2022/manifest-bolesti/mah01395.mp4', poster: M + 'volna-tvorba/2022/manifest-bolesti/mah01395.webp' },
               { src: M + 'volna-tvorba/2022/manifest-bolesti/mah01396.mp4', poster: M + 'volna-tvorba/2022/manifest-bolesti/mah01396.webp' },

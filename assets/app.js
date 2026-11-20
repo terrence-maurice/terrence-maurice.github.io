@@ -75,7 +75,10 @@
 
     return '' +
       '<section class="hero">' +
-        '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize – navždy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
+        '<blockquote class="hero-quote"><p>' + L({
+          cs: 'Jednou jsi součástí audiovize – navždy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?',
+          en: 'Once you’re part of audiovision – you’re part of audiovision forever. You just have sound visions...visions with sound! Get it?'
+        }) + '</p></blockquote>' +
         '<h1 class="display-xl hero-name"><span>Tereza</span> <span>Muric</span></h1>' +
         '<p class="lead"' + (typeof a.lead === 'string' ? ' lang="cs"' : '') + '>' + L(a.lead) + '</p>' +
       '</section>' +
@@ -105,7 +108,7 @@
 
   /* Galerie pohyblivého obrazu: všechna videa z ostatních kapitol (stejné soubory), seskupená podle roku sekce.
      Moving-image gallery: every video from the other chapters (same files), grouped by the year of the section it sits in. */
-  var GALERIE_TITLE = { cs: 'Galerie pohyblivého obrazu', en: 'Galerie pohyblivého obrazu' };
+  var GALERIE_TITLE = { cs: 'Galerie pohyblivého obrazu', en: 'Moving Image Gallery' };
 
   function galleryChapter() {
     var byYear = {};
@@ -140,7 +143,7 @@
 
   function shortSeason(s) {
     var cs = s.cs.replace(' klauzura', '').replace(' — Cinema and Digital Media', '');
-    var en = s.en.replace(' klauzura', '').replace(' — Cinema and Digital Media', '');
+    var en = s.en.replace(' end-of-semester exam', '').replace(' — Cinema and Digital Media', '');
     return { cs: cs, en: en };
   }
 
@@ -215,8 +218,8 @@
   function audioList(a) {
     return '<ol class="tracks">' + a.tracks.map(function (t, i) {
       return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
-        '<span class="track-name">' + t[1] + '</span>' +
-        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + t[1] + '"></audio></li>';
+        '<span class="track-name">' + L(t[1]) + '</span>' +
+        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + plain(t[1]) + '"></audio></li>';
     }).join('') + '</ol>';
   }
 
@@ -390,7 +393,8 @@
     // the title is part of the text (as in the author's PDF); the page uses the site's own type
     return '' +
       '<div class="page-head page-head-text">' + back + '</div>' +
-      '<article class="text-page" lang="cs">' + f.work.page.join('') + '</article>' +
+      '<article class="text-page"><div class="l-cs" lang="cs">' + f.work.page.cs.join('') + '</div>' +
+        '<div class="l-en" lang="en">' + f.work.page.en.join('') + '</div></article>' +
       '<div class="page-end">' + back + '</div>';
   }
 

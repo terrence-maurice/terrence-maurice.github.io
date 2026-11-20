@@ -21,7 +21,7 @@ To preview, serve the repo root with any static file server and open `http://loc
 
 ### Bilingual text
 
-Any text value is either a plain string (shown in both languages) or `{ cs, en }`. `L()` renders both language variants as `.l-cs` / `.l-en` spans, and CSS shows the one matching `html[data-lang]`. The language is stored in `localStorage.lang`, and an inline script in `<head>` applies it before the first paint. `ABOUT.lead` is currently a Czech-only plain string on purpose. It is shown in EN mode too, until the author supplies an English version.
+Any text value is either a plain string (shown in both languages) or `{ cs, en }`. `L()` renders both language variants as `.l-cs` / `.l-en` spans, and CSS shows the one matching `html[data-lang]`. The language is stored in `localStorage.lang`, and an inline script in `<head>` applies it before the first paint. `ABOUT.lead` (the bio) and the home-page quote have `{ cs, en }` versions; the English ones are translations of the author's Czech text.
 
 ### Things that must change together
 
