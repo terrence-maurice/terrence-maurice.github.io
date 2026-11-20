@@ -181,6 +181,23 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
 .work-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(32px, 3.6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 8px; }
 .work-meta { color: var(--muted); margin: 0 0 22px; }
 .work-title + .video-wrap, .work-title + .gallery, .work-title + .tracks { margin-top: 26px; }
+.work-link { text-decoration: none; transition: color .25s ease; }
+.work-link:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.text-link {
+  display: inline-flex; gap: 8px; align-items: baseline; margin: 2px 0 26px;
+  font-family: var(--font-display); font-size: var(--fs-h2); letter-spacing: -0.01em; text-decoration: none; color: var(--accent);
+}
+.text-link span { transition: transform .25s ease; }
+.text-link:hover { color: var(--fg); }
+.text-link:hover span { transform: translateX(6px); }
+.text-link + .gallery { margin-top: 0; }
+
+/* ---------- text page ---------- */
+.text-page { max-width: 68ch; margin-bottom: 12vh; }
+.text-page p { margin: 0 0 1.05em; }
+.text-page a { text-decoration: underline; }
+.text-credits { color: var(--accent); line-height: 1.55; margin-bottom: 2em !important; }
+.text-head { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-h2); letter-spacing: -0.01em; margin: 2.2em 0 0.8em; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 
 .video-wrap { background: #000; aspect-ratio: 16 / 9; margin: 0 0 26px; }
 .video-wrap video { width: 100%; height: 100%; object-fit: contain; background: #000; }
@@ -211,16 +228,28 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
 .gallery:not(.video-gallery) .slide { height: 100%; }
 .slide img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
 
-/* print sheet: comes out of a printer slot at the top */
-.print-wrap { position: relative; }
-.print-slot {
-  position: absolute; left: -16px; right: -16px; top: -7px; height: 7px; z-index: 2;
-  border-radius: 3px; background: linear-gradient(#2a2c33, #0c0d10);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 3px 8px rgba(0,0,0,0.8);
+/* ---------- print sheet (Smrt auta): slides out of the top bar like paper from a printer ---------- */
+html.sheet-open, html.sheet-open body { overflow: hidden; }
+.sheet {
+  position: fixed; inset: 0; z-index: 19;
+  background: rgba(var(--bg-rgb), calc(0.94 * var(--fade, 1)));
 }
-.print-sheet { overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.55); }
-.print-sheet img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; }
-.slide-print.printing .print-sheet img { animation: print-out 3.2s linear .45s both; }
+.sheet[hidden] { display: none; }
+.sheet-clip { position: absolute; left: 0; right: 0; bottom: 0; top: var(--topbar-h); overflow: hidden; }
+.sheet-slot {
+  position: absolute; top: var(--topbar-h); left: calc(var(--pad) - 12px); right: calc(var(--pad) - 12px); height: 8px; z-index: 2;
+  border-radius: 3px; background: linear-gradient(#2a2c33, #0c0d10);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 4px 10px rgba(0,0,0,0.85);
+  opacity: var(--fade, 1);
+}
+.sheet-scroll {
+  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  padding: 0 var(--pad); outline: none; scrollbar-width: thin;
+}
+.sheet-paper { box-shadow: 0 14px 40px rgba(0,0,0,0.6); background: #fff; }
+.sheet-paper img { display: block; width: 100%; height: auto; max-width: none; }
+.sheet-tail { height: calc(100vh - var(--topbar-h)); }
+.sheet.printing .sheet-scroll { animation: print-out 2.6s linear both; }
 @keyframes print-out {
   0%   { transform: translateY(-100%); }
   6%   { transform: translateY(-94%); }   9% { transform: translateY(-94%); }
@@ -231,32 +260,12 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
   84%  { transform: translateY(-9%); }   87% { transform: translateY(-9%); }
   100% { transform: translateY(0); }
 }
-.zoom-btn {
-  position: absolute; left: 100%; bottom: 0; margin-left: 14px; white-space: nowrap;
-  font-size: 15px; color: var(--fg); padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px;
-  background: rgba(var(--bg-rgb), 0.7); cursor: zoom-in; transition: border-color .25s ease;
+.sheet-close {
+  position: absolute; top: calc(var(--topbar-h) + 18px); right: calc(var(--pad) + 10px); z-index: 3;
+  width: 44px; height: 44px; border-radius: 999px; font-size: 30px; line-height: 1;
+  background: rgba(var(--bg-rgb), 0.75); border: 1px solid var(--line); opacity: var(--fade, 1);
 }
-.zoom-btn:hover { border-color: var(--fg); }
-
-/* zoom view */
-html.zoom-open, html.zoom-open body { overflow: hidden; }
-.zoomer { position: fixed; inset: 0; z-index: 60; background: rgba(var(--bg-rgb), 0.96); }
-.zoomer[hidden] { display: none; }
-.zoomer-scroll {
-  position: absolute; inset: 0; overflow: auto; display: flex; padding: 20px 16px 84px;
-  touch-action: pan-x pan-y pinch-zoom; overscroll-behavior: contain; cursor: zoom-in;
-}
-.zoomer.zoomed .zoomer-scroll { cursor: grab; }
-.zoomer-scroll img { margin: auto; flex: none; max-width: none; user-select: none; -webkit-user-select: none; background: #fff; }
-.zoomer-bar {
-  position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 999px;
-  background: rgba(var(--bg-rgb), 0.85);
-}
-.zoomer-bar button { width: 44px; height: 44px; font-size: 26px; line-height: 1; border-radius: 999px; }
-.zoomer-bar button:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
-.zoomer-bar button:disabled { opacity: 0.3; cursor: default; }
-.zoomer-level { min-width: 3ch; text-align: center; color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.sheet-close:hover { border-color: var(--fg); }
 .gallery-hint { margin: 10px 0 0; color: var(--muted); font-size: 15px; transition: opacity .4s ease; }
 .gallery.touched .gallery-hint { opacity: 0; }
 
@@ -301,7 +310,6 @@ a.contact-big:hover { text-decoration: underline; text-decoration-thickness: 2px
   .track { grid-template-columns: 3ch 1fr; }
   .track audio { grid-column: 1 / -1; }
   .gallery:not(.video-gallery) .gallery-stage { height: min(70vh, 110vw); }
-  .zoom-btn { font-size: 14px; margin-left: 10px; padding: 5px 9px; }
   .hero { min-height: 52vh; }
   .hero-name span { display: block; }
   .hero-name { font-size: calc(100cqi / var(--name-line-em)); }

@@ -154,8 +154,10 @@
   }
 
   function renderWork(w) {
-    var h = '<article class="work">';
-    h += '<h3 class="work-title">' + L(w.title) + '</h3>';
+    var h = '<article class="work"' + (w.id ? ' id="work-' + w.id + '" data-work="' + w.id + '"' : '') + '>';
+    // a work with a print sheet: the title is the link that slides the sheet out
+    h += '<h3 class="work-title">' + (w.print ? '<a class="work-link" href="#/famu-cas/' + w.id + '" data-print-open>' + L(w.title) + '</a>' : L(w.title)) + '</h3>';
+    if (w.page) h += '<a class="text-link" href="#/text/' + w.id + '">Text <span aria-hidden="true">→</span></a>';
     if (w.meta) h += '<p class="work-meta">' + L(w.meta) + '</p>';
     if (w.video) h += videoEl(w.video, plain(w.title));
     if (w.videos) h += videoGallery(w.videos, w.title);
@@ -181,21 +183,8 @@
 
   function gallery(g, workTitle) {
     var label = stripTags(plain(g.title || workTitle));
-    var slides = g.images.map(function (im, i) {
-      var name = typeof im === 'string' ? im : im.name;
-      var src = g.base + name + '.webp';
-      var alt = label + ' — ' + (i + 1) + '/' + g.images.length;
-      var img = '<img ' + (i === 0 ? 'src' : 'data-src') + '="' + src + '" alt="' + alt + '" decoding="async"' + (i === 0 ? ' loading="lazy"' : '') + '>';
-      if (typeof im === 'object' && im.print) {
-        // tisk: obrázek vyjede shora jako papír z tiskárny a dá se přiblížit / print: slides out from the top like paper, zoomable
-        return '<div class="slide slide-print" data-print>' +
-          '<div class="print-wrap"><span class="print-slot" aria-hidden="true"></span>' +
-            '<div class="print-sheet">' + img + '</div>' +
-            '<button type="button" class="zoom-btn" data-zoom="' + src + '" data-alt="' + alt + '" tabindex="-1">' +
-              '<span aria-hidden="true">⤢</span> ' + L({ cs: 'Přiblížit', en: 'Zoom in' }) + '</button>' +
-          '</div></div>';
-      }
-      return '<div class="slide">' + img + '</div>';
+    var slides = g.images.map(function (name, i) {
+      return '<div class="slide"><img ' + (i === 0 ? 'src' : 'data-src') + '="' + g.base + name + '.webp" alt="' + label + ' — ' + (i + 1) + '/' + g.images.length + '" decoding="async"' + (i === 0 ? ' loading="lazy"' : '') + '></div>';
     }).join('');
     return '<figure class="gallery" data-gallery data-count="' + g.images.length + '">' +
       '<figcaption class="gallery-head">' +
@@ -248,7 +237,6 @@
      zhruba stejnou plochu: průměr ploch, které by měly, kdyby každý sám vyplnil scénu.
      Every image keeps its own aspect ratio (never cropped or stretched). Images in one gallery get roughly
      the same area: the average of the areas they would have if each filled the stage on its own. */
-  var PRINT_PAD = 12;          // room above and below the print sheet for the printer slot
   var viewH = window.innerHeight, viewW = window.innerWidth;
 
   function aspectOf(img) { return img && img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0; }
@@ -258,52 +246,21 @@
     var W = stage.clientWidth;
     if (!W) return;
     var Hmax = Math.round(viewH * 0.82);
-    var items = [];
-    g.querySelectorAll('.slide').forEach(function (s) {
-      var img = s.querySelector('img');
-      items.push({ s: s, img: img, a: aspectOf(img), print: s.hasAttribute('data-print') });
-    });
-    var normal = items.filter(function (it) { return it.a && !it.print; });
+    var imgs = Array.prototype.slice.call(g.querySelectorAll('.slide img'));
+    var known = imgs.filter(aspectOf);
     var A = 0;
-    normal.forEach(function (it) { var h = Math.min(Hmax, W / it.a); A += h * h * it.a; });
-    if (normal.length) A /= normal.length;
-
-    var baseH = 0;
-    items.forEach(function (it) {
-      var a = it.a || 1.5, h;
-      if (it.print) h = Math.min(Hmax - 2 * PRINT_PAD, W / a);               // the whole sheet, as tall as fits
-      else h = Math.min(A ? Math.sqrt(A / a) : Hmax, Hmax, W / a);
-      var w = Math.round(h * a);
-      h = Math.round(h);
-      var box = it.print ? it.s.querySelector('.print-sheet') : it.img;
-      box.style.width = w + 'px';
-      box.style.height = h + 'px';
-      it.s._h = it.print ? h + 2 * PRINT_PAD : h;
-      if (!it.print) baseH = Math.max(baseH, h);
+    known.forEach(function (img) { var a = aspectOf(img), h = Math.min(Hmax, W / a); A += h * h * a; });
+    if (known.length) A /= known.length;
+    var maxH = 0;
+    imgs.forEach(function (img) {
+      var a = aspectOf(img) || 1.5;
+      var h = Math.min(A ? Math.sqrt(A / a) : Hmax, Hmax, W / a);
+      img.style.width = Math.round(h * a) + 'px';
+      img.style.height = Math.round(h) + 'px';
+      maxH = Math.max(maxH, Math.round(h));
     });
-    g._baseH = baseH || Math.min(Hmax, Math.round(W / 1.5));
-    sizeStage(g, g._index ? g._index() : 0);
-  }
-
-  // the stage keeps the height of the gallery's tallest ordinary image; it grows only for the print sheet
-  function sizeStage(g, i) {
-    var s = g.querySelectorAll('.slide')[i];
-    var h = s && s.hasAttribute('data-print') ? Math.max(g._baseH, s._h) : g._baseH;
-    if (h) g.querySelector('.gallery-stage').style.height = h + 'px';
-  }
-
-  var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
-
-  // the print slide "comes out of the printer" every time it becomes the current slide
-  function onSlide(g, s) {
-    g.querySelectorAll('[data-zoom]').forEach(function (b) { b.tabIndex = -1; });
-    if (!s || !s.hasAttribute('data-print')) return;
-    var b = s.querySelector('[data-zoom]');
-    if (b) b.tabIndex = 0;
-    if (!g.classList.contains('touched') || (reduceMotion && reduceMotion.matches)) return;
-    s.classList.remove('printing');
-    void s.offsetWidth;
-    s.classList.add('printing');
+    // the stage keeps the height of the gallery's tallest image, so the page doesn't jump while clicking through
+    stage.style.height = (maxH || Math.min(Hmax, Math.round(W / 1.5))) + 'px';
   }
 
   window.addEventListener('resize', function () {
@@ -313,119 +270,126 @@
       if (window.innerWidth === viewW && Math.abs(window.innerHeight - viewH) < 160) return;
       viewW = window.innerWidth; viewH = window.innerHeight;
       app.querySelectorAll('[data-gallery]:not([data-video])').forEach(layoutGallery);
-      if (zoomer && !zoomer.hidden) setZoom(zoomLevel);
     }, 120);
   });
 
-  /* ---------- zoom view (print sheet) ---------- */
-  var zoomer = null, zoomLevel = 1, zoomOpener = null;
-  var ZOOM_LEVELS = [1, 2, 4, 6];
+  /* ---------- print sheet (Smrt auta) ----------
+     Prapor vyjede z horní lišty jako papír z tiskárny, skoro přes celou šířku okna. Dá se v něm scrollovat dolů;
+     když dojede na konec, zmizí a pod ním je zase kapitola. Spouští se kliknutím na název díla
+     (nebo odkazem #/famu-cas/<id>) a jednou při každém otevření kapitoly, když k dílu doscrollujete.
+     The banner slides out of the top bar like paper from a printer, almost as wide as the window. You scroll down
+     through it; once its end has passed, it disappears and the chapter is back. It opens from the work title
+     (or a #/famu-cas/<id> link) and once per chapter visit when you scroll to the work. */
+  var sheet = null, sheetOpener = null, sheetDone = {}, sheetIO = null;
 
-  function buildZoomer() {
-    zoomer = document.createElement('div');
-    zoomer.className = 'zoomer';
-    zoomer.hidden = true;
-    zoomer.setAttribute('role', 'dialog');
-    zoomer.setAttribute('aria-modal', 'true');
-    zoomer.innerHTML = '<div class="zoomer-scroll"><img alt="" draggable="false"></div>' +
-      '<div class="zoomer-bar">' +
-        '<button type="button" data-z="out"><span aria-hidden="true">−</span><span class="sr-only">' + L({ cs: 'Oddálit', en: 'Zoom out' }) + '</span></button>' +
-        '<span class="zoomer-level" aria-live="polite"></span>' +
-        '<button type="button" data-z="in"><span aria-hidden="true">+</span><span class="sr-only">' + L({ cs: 'Přiblížit', en: 'Zoom in' }) + '</span></button>' +
-        '<button type="button" data-z="close"><span aria-hidden="true">×</span><span class="sr-only">' + L({ cs: 'Zavřít', en: 'Close' }) + '</span></button>' +
-      '</div>';
-    document.body.appendChild(zoomer);
-
-    var sc = zoomer.querySelector('.zoomer-scroll');
-    var img = sc.querySelector('img');
-    img.addEventListener('load', function () { if (!zoomer.hidden) setZoom(zoomLevel); });
-
-    // mouse: drag to pan, click to zoom in at that point (at the last level, back to the whole sheet)
-    var drag = null, dragged = false;
-    sc.addEventListener('pointerdown', function (e) {
-      dragged = false;
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      drag = { x: e.clientX, y: e.clientY, l: sc.scrollLeft, t: sc.scrollTop };
-      e.preventDefault();
+  function findWork(id) {
+    var found = null;
+    Object.keys(CHAPTERS).forEach(function (key) {
+      CHAPTERS[key].sections.forEach(function (s) {
+        s.works.forEach(function (w) { if (w.id === id) found = { work: w, chapter: key }; });
+      });
     });
-    window.addEventListener('pointermove', function (e) {
-      if (!drag) return;
-      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      if (Math.abs(dx) + Math.abs(dy) > 5) dragged = true;
-      sc.scrollLeft = drag.l - dx; sc.scrollTop = drag.t - dy;
-    });
-    window.addEventListener('pointerup', function () { drag = null; });
-    sc.addEventListener('click', function (e) {
-      if (dragged) { dragged = false; return; }
-      if (e.target !== img) { closeZoom(); return; }
-      var k = ZOOM_LEVELS.indexOf(zoomLevel);
-      setZoom(k < ZOOM_LEVELS.length - 1 ? ZOOM_LEVELS[k + 1] : 1, e.clientX, e.clientY);
-    });
+    return found;
+  }
 
-    zoomer.querySelector('[data-z="in"]').addEventListener('click', function () { stepZoom(1); });
-    zoomer.querySelector('[data-z="out"]').addEventListener('click', function () { stepZoom(-1); });
-    zoomer.querySelector('[data-z="close"]').addEventListener('click', closeZoom);
-    zoomer.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { e.stopPropagation(); closeZoom(); }
-      else if (e.key === '+' || e.key === '=') stepZoom(1);
-      else if (e.key === '-') stepZoom(-1);
-      else if (e.key === 'Tab') {               // keep focus inside the dialog
-        var bs = zoomer.querySelectorAll('button'), first = bs[0], last = bs[bs.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
+  function buildSheet() {
+    sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    sheet.hidden = true;
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.innerHTML = '<span class="sheet-slot" aria-hidden="true"></span>' +
+      '<div class="sheet-clip"><div class="sheet-scroll" tabindex="-1"><div class="sheet-paper"><img alt="" draggable="false"></div><div class="sheet-tail" aria-hidden="true"></div></div></div>' +
+      '<button type="button" class="sheet-close"><span aria-hidden="true">×</span><span class="sr-only">' + L({ cs: 'Zavřít', en: 'Close' }) + '</span></button>';
+    document.body.appendChild(sheet);
+    var sc = sheet.querySelector('.sheet-scroll'), paper = sheet.querySelector('.sheet-paper');
+    sc.addEventListener('scroll', function () {
+      // how much of the sheet is still below the slot; the dark background fades out with the last screenful
+      var rest = paper.getBoundingClientRect().bottom - sc.getBoundingClientRect().top;
+      sheet.style.setProperty('--fade', Math.max(0, Math.min(1, rest / sc.clientHeight)).toFixed(3));
+      if (rest <= 2) closeSheet();
+    }, { passive: true });
+    sheet.querySelector('.sheet-close').addEventListener('click', closeSheet);
+    sheet.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.stopPropagation(); closeSheet(); }
     });
   }
 
-  function stepZoom(d) {
-    var k = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, ZOOM_LEVELS.indexOf(zoomLevel) + d));
-    setZoom(ZOOM_LEVELS[k]);
+  function openSheet(id, opener) {
+    var f = findWork(id);
+    if (!f || !f.work.print) return;
+    if (!sheet) buildSheet();
+    sheetDone[id] = true;
+    sheetOpener = opener || null;
+    var p = f.work.print, img = sheet.querySelector('img');
+    if (img.getAttribute('src') !== p.src) {
+      img.width = p.w; img.height = p.h;
+      img.src = p.src;
+    }
+    img.alt = plain(f.work.title);
+    sheet.setAttribute('aria-label', plain(f.work.title));
+    sheet.style.setProperty('--fade', 1);
+    sheet.hidden = false;
+    root.classList.add('sheet-open');
+    var sc = sheet.querySelector('.sheet-scroll');
+    sc.scrollTop = 0;
+    sheet.classList.remove('printing');
+    void sheet.offsetWidth;
+    sheet.classList.add('printing');
+    sc.focus({ preventScroll: true });
   }
 
-  function setZoom(z, cx, cy) {
-    var sc = zoomer.querySelector('.zoomer-scroll'), img = sc.querySelector('img');
-    var a = aspectOf(img);
-    if (!a) return;
-    var r = img.getBoundingClientRect(), sr = sc.getBoundingClientRect();
-    if (cx == null) { cx = sr.left + sr.width / 2; cy = sr.top + sr.height / 2; }
-    var px = r.width ? Math.min(1, Math.max(0, (cx - r.left) / r.width)) : 0.5;
-    var py = r.height ? Math.min(1, Math.max(0, (cy - r.top) / r.height)) : 0.5;
-    var cs = getComputedStyle(sc);
-    var availH = sc.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    var availW = sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    var fitH = Math.min(availH, availW / a);
-    zoomLevel = z;
-    img.style.height = Math.round(fitH * z) + 'px';
-    img.style.width = Math.round(fitH * z * a) + 'px';
-    var r2 = img.getBoundingClientRect();
-    sc.scrollLeft += r2.left + px * r2.width - cx;
-    sc.scrollTop += r2.top + py * r2.height - cy;
-    zoomer.classList.toggle('zoomed', z > 1);
-    zoomer.querySelector('.zoomer-level').textContent = z + '×';
-    zoomer.querySelector('[data-z="out"]').disabled = z === ZOOM_LEVELS[0];
-    zoomer.querySelector('[data-z="in"]').disabled = z === ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+  function closeSheet() {
+    if (!sheet || sheet.hidden) return;
+    sheet.hidden = true;
+    sheet.classList.remove('printing');
+    root.classList.remove('sheet-open');
+    if (sheetOpener && document.body.contains(sheetOpener)) sheetOpener.focus({ preventScroll: true });
+    sheetOpener = null;
   }
 
-  function openZoom(btn) {
-    if (!zoomer) buildZoomer();
-    zoomOpener = btn;
-    var img = zoomer.querySelector('img');
-    img.style.width = img.style.height = '';
-    img.src = btn.getAttribute('data-zoom');
-    img.alt = btn.getAttribute('data-alt');
-    zoomer.setAttribute('aria-label', btn.getAttribute('data-alt'));
-    zoomer.hidden = false;
-    root.classList.add('zoom-open');
-    zoomLevel = 1;
-    if (img.complete) setZoom(1);
-    zoomer.querySelector('[data-z="close"]').focus({ preventScroll: true });
+  // chapter wiring: title click, preload when near, open once when the work reaches the middle of the screen
+  function initSheets(scope) {
+    if (sheetIO) { sheetIO.disconnect(); sheetIO = null; }
+    var works = scope.querySelectorAll('[data-work]');
+    works.forEach(function (el) {
+      var link = el.querySelector('[data-print-open]');
+      if (link) link.addEventListener('click', function (e) { e.preventDefault(); openSheet(el.getAttribute('data-work'), link); });
+    });
+    if (!('IntersectionObserver' in window)) return;
+    var pre = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var f = findWork(en.target.getAttribute('data-work'));
+        if (f && f.work.print) { var im = new Image(); im.src = f.work.print.src; }
+        pre.unobserve(en.target);
+      });
+    }, { rootMargin: '1500px 0px' });
+    sheetIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var id = en.target.getAttribute('data-work');
+        if (!en.isIntersecting || sheetDone[id]) return;
+        openSheet(id, en.target.querySelector('[data-print-open]'));
+      });
+    }, { rootMargin: '0px 0px -50% 0px' });
+    works.forEach(function (el) {
+      var f = findWork(el.getAttribute('data-work'));
+      if (!f || !f.work.print) return;
+      pre.observe(el);
+      sheetIO.observe(el);
+    });
   }
 
-  function closeZoom() {
-    if (!zoomer || zoomer.hidden) return;
-    zoomer.hidden = true;
-    root.classList.remove('zoom-open');
-    if (zoomOpener) zoomOpener.focus({ preventScroll: true });
+  /* ---------- text page ---------- */
+  function renderText(id) {
+    var f = findWork(id);
+    if (!f || !f.work.page) return renderHome();
+    var back = '<a class="back-link" href="#/' + f.chapter + '/' + id + '"><span class="arrow" aria-hidden="true">←</span>' + L(f.work.title) + '</a>';
+    return '' +
+      '<div class="page-head">' + back +
+        '<h1 class="display-xl display-gallery">' + L(f.work.title) + '</h1></div>' +
+      '<article class="text-page" lang="cs">' + f.work.page.join('') + '</article>' +
+      '<div class="page-end">' + back + '</div>';
   }
 
   /* ---------- galleries behaviour ---------- */
@@ -449,15 +413,12 @@
       if (io && !isVideo) io.observe(g);
       else g.querySelectorAll('img[data-src]').forEach(function (img) { img.src = img.getAttribute('data-src'); });
 
-      var slideEls = g.querySelectorAll('.slide');
-
       function go(to) {
         if (isVideo) g.querySelectorAll('video').forEach(function (v) { v.pause(); });
         i = (to + n) % n;
         track.style.transform = 'translateX(' + (-100 * i) + '%)';
         idxEl.textContent = i + 1;
         g.classList.add('touched');
-        if (!isVideo) { onSlide(g, slideEls[i]); sizeStage(g, i); }
       }
 
       if (isVideo) {
@@ -466,14 +427,12 @@
         return;
       }
 
-      g._index = function () { return i; };
       g.querySelectorAll('img').forEach(function (img) {
         img.addEventListener('load', function () { layoutGallery(g); });
       });
       layoutGallery(g);
-      onSlide(g, slideEls[0]);
 
-      // click = next; swipe left/right = next/prev; the zoom button opens the zoom view instead
+      // click = next; swipe left/right = next/prev
       var startX = null, startY = null, moved = false;
       stage.addEventListener('pointerdown', function (e) { startX = e.clientX; startY = e.clientY; moved = false; });
       stage.addEventListener('pointerup', function (e) {
@@ -483,14 +442,8 @@
         if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { moved = true; go(dx < 0 ? i + 1 : i - 1); }
       });
       stage.addEventListener('pointercancel', function () { startX = null; });
-      stage.addEventListener('click', function (e) {
-        if (moved) { moved = false; return; }
-        var z = e.target.closest('[data-zoom]');
-        if (z) { openZoom(z); return; }
-        go(i + 1);
-      });
+      stage.addEventListener('click', function () { if (moved) { moved = false; return; } go(i + 1); });
       stage.addEventListener('keydown', function (e) {
-        if (e.target.closest('[data-zoom]')) return;
         if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(i + 1); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); go(i - 1); }
       });
@@ -516,33 +469,54 @@
       'kontakt': { cs: 'Kontakt', en: 'Contact' }
     };
     var c = crumbs[route] || crumbs[''];
+    var textWork = route === 'text' ? findWork(routeSub()) : null;
+    if (textWork) c = crumbs[textWork.chapter];
     document.getElementById('crumb-label').textContent = c[l];
-    document.title = route ? c[l] + ' — Tereza Muric' : 'Tereza Muric — ' + tr('vizuální umělec, filmař', 'visual artist, filmmaker');
+    document.title = textWork ? plain(textWork.work.title) + ' — Tereza Muric'
+      : route ? c[l] + ' — Tereza Muric' : 'Tereza Muric — ' + tr('vizuální umělec, filmař', 'visual artist, filmmaker');
   }
 
-  /* ---------- router ---------- */
+  /* ---------- router ----------
+     #/<chapter>, #/<chapter>/<work id> (scrolls to the work; a work with a print sheet opens it), #/text/<work id> */
   function currentRoute() {
     var r = (location.hash || '').replace(/^#\/?/, '').split('/')[0];
-    return (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie' || r === 'kontakt') ? r : '';
+    return (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie' || r === 'kontakt' || r === 'text') ? r : '';
   }
+  function routeSub() { return (location.hash || '').replace(/^#\/?/, '').split('/')[1] || ''; }
 
-  var lastRoute = null;
+  var lastRoute = null, lastSub = null;
   function render() {
-    var r = currentRoute();
-    if (r === lastRoute) return;
-    lastRoute = r;
-    closeZoom();
-    if (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie') app.innerHTML = renderChapter(r);
-    else if (r === 'kontakt') app.innerHTML = renderContact();
-    else app.innerHTML = renderHome();
-    document.getElementById('back-arrow').hidden = (r === '');
-    document.querySelectorAll('.menu a[data-route]').forEach(function (a) {
-      if (a.getAttribute('data-route') === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-    });
-    initGalleries(app);
-    updateDynamicLabels();
-    window.scrollTo(0, 0);
-    app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+    var r = currentRoute(), sub = routeSub();
+    if (r === lastRoute && sub === lastSub) return;
+    var prevRoute = lastRoute, prevSub = lastSub;
+    var samePage = r === lastRoute && r !== 'text';
+    lastRoute = r; lastSub = sub;
+    closeSheet();
+    if (!samePage) {
+      if (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie') app.innerHTML = renderChapter(r);
+      else if (r === 'kontakt') app.innerHTML = renderContact();
+      else if (r === 'text') app.innerHTML = renderText(sub);
+      else app.innerHTML = renderHome();
+      document.getElementById('back-arrow').hidden = (r === '');
+      document.querySelectorAll('.menu a[data-route]').forEach(function (a) {
+        if (a.getAttribute('data-route') === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      });
+      sheetDone = {};
+      initGalleries(app);
+      initSheets(app);
+      updateDynamicLabels();
+      window.scrollTo(0, 0);
+      app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+    }
+    // #/<chapter>/<work>: go to the work and slide its sheet out; back from a text page: return to that work quietly
+    var fromText = prevRoute === 'text' && r !== 'text';
+    var workId = r === 'text' ? '' : (sub || (fromText ? prevSub : ''));
+    var el = workId ? document.getElementById('work-' + workId) : null;
+    if (el) {
+      el.scrollIntoView({ block: 'start' });
+      if (fromText) sheetDone[workId] = true;
+      else openSheet(workId, el.querySelector('[data-print-open]'));
+    }
   }
 
   window.addEventListener('hashchange', render);
