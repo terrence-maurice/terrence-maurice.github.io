@@ -15,7 +15,7 @@
   --fs-body: clamp(17px, 1.15vw + 8px, 20px);
   --fs-h2: clamp(26px, 2.3vw + 10px, 40px);
   --fs-h1: clamp(56px, 10vw, 168px);
-  --topbar-h: clamp(72px, 9vw, 112px);
+  --topbar-h: clamp(76px, 9vw, 124px);
 }
 
 * { box-sizing: border-box; }
@@ -57,6 +57,7 @@ main, .site-foot { position: relative; z-index: 1; }
 .topbar > * { pointer-events: auto; }
 .brand { font-family: var(--font-display); font-size: var(--fs-h2); line-height: 1.02; letter-spacing: -0.01em; }
 .brand a { text-decoration: none; }
+.brand-name { font-family: var(--font-elvish); font-size: 1.3em; letter-spacing: 0; line-height: 1.05; }
 .crumb { display: flex; align-items: baseline; gap: 0.35em; }
 .crumb .back { text-decoration: none; transition: transform .25s ease; display: inline-block; }
 .crumb .back:hover { transform: translateX(-4px); }

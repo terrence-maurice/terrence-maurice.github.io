@@ -275,12 +275,14 @@
 
   /* ---------- print sheet (Smrt auta) ----------
      Prapor vyjede z horní lišty jako papír z tiskárny, skoro přes celou šířku okna. Dá se v něm scrollovat dolů;
-     když dojede na konec, zmizí a pod ním je zase kapitola. Spouští se kliknutím na název díla
-     (nebo odkazem #/famu-cas/<id>) a jednou při každém otevření kapitoly, když k dílu doscrollujete.
+     když dojede na konec, zmizí a pod ním je zase kapitola. Spouští se kliknutím na název díla, na tlačítko roku
+     jeho sekce („2024 Zimní“), odkazem #/famu-cas/<id> a jednou při každém otevření kapitoly, když doscrollujete
+     k jeho sekci („2024 Zimní klauzura“).
      The banner slides out of the top bar like paper from a printer, almost as wide as the window. You scroll down
-     through it; once its end has passed, it disappears and the chapter is back. It opens from the work title
-     (or a #/famu-cas/<id> link) and once per chapter visit when you scroll to the work. */
-  var sheet = null, sheetOpener = null, sheetDone = {}, sheetIO = null;
+     through it; once its end has passed, it disappears and the chapter is back. It opens from the work title, the
+     year button of its section, a #/famu-cas/<id> link, and once per chapter visit when you scroll to its section. */
+  var sheet = null, sheetOpener = null, sheetDone = {}, sheetWatch = [];
+  var sheetQuietUntil = 0;     // a year button's smooth scroll passing over a section doesn't open its sheet
 
   function findWork(id) {
     var found = null;
@@ -348,35 +350,39 @@
     sheetOpener = null;
   }
 
-  // chapter wiring: title click, preload when near, open once when the work reaches the middle of the screen
-  function initSheets(scope) {
-    if (sheetIO) { sheetIO.disconnect(); sheetIO = null; }
-    var works = scope.querySelectorAll('[data-work]');
-    works.forEach(function (el) {
-      var link = el.querySelector('[data-print-open]');
-      if (link) link.addEventListener('click', function (e) { e.preventDefault(); openSheet(el.getAttribute('data-work'), link); });
+  // chapter wiring for each work with a print sheet:
+  // - its title opens the sheet;
+  // - the year button of its section (e.g. "2024 Zimní") jumps to the section and opens the sheet;
+  // - scrolling down to its section (heading reaches the middle of the screen) opens it once per chapter visit.
+  function checkSheets() {
+    if ((sheet && !sheet.hidden) || Date.now() < sheetQuietUntil) return;
+    var vh = window.innerHeight;
+    sheetWatch.forEach(function (w) {
+      var r = w.section.getBoundingClientRect();
+      if (!w.preloaded && r.top < vh + 1500) { w.preloaded = true; var im = new Image(); im.src = w.src; }
+      // the section heading has reached the middle of the screen and the section still fills the middle
+      if (!sheetDone[w.id] && r.top <= vh * 0.5 && r.bottom > vh * 0.5) openSheet(w.id, document.querySelector('#work-' + w.id + ' [data-print-open]'));
     });
-    if (!('IntersectionObserver' in window)) return;
-    var pre = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        var f = findWork(en.target.getAttribute('data-work'));
-        if (f && f.work.print) { var im = new Image(); im.src = f.work.print.src; }
-        pre.unobserve(en.target);
-      });
-    }, { rootMargin: '1500px 0px' });
-    sheetIO = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        var id = en.target.getAttribute('data-work');
-        if (!en.isIntersecting || sheetDone[id]) return;
-        openSheet(id, en.target.querySelector('[data-print-open]'));
-      });
-    }, { rootMargin: '0px 0px -50% 0px' });
-    works.forEach(function (el) {
-      var f = findWork(el.getAttribute('data-work'));
+  }
+  window.addEventListener('scroll', checkSheets, { passive: true });
+
+  function initSheets(scope) {
+    sheetWatch = [];
+    scope.querySelectorAll('[data-work]').forEach(function (el) {
+      var id = el.getAttribute('data-work');
+      var f = findWork(id);
       if (!f || !f.work.print) return;
-      pre.observe(el);
-      sheetIO.observe(el);
+      var link = el.querySelector('[data-print-open]');
+      link.addEventListener('click', function (e) { e.preventDefault(); openSheet(id, link); });
+      var section = el.closest('.period');
+      if (!section) return;
+      section.setAttribute('data-sheet-for', id);
+      var jump = scope.querySelector('[data-jump="' + section.id + '"]');
+      if (jump) jump.addEventListener('click', function () {
+        section.scrollIntoView({ block: 'start' });     // jump at once (no smooth scroll), then slide the sheet out
+        openSheet(id, jump);
+      });
+      sheetWatch.push({ id: id, section: section, src: f.work.print.src, preloaded: false });
     });
   }
 
@@ -452,6 +458,7 @@
     scope.querySelectorAll('[data-jump]').forEach(function (b) {
       b.addEventListener('click', function () {
         var el = document.getElementById(b.getAttribute('data-jump'));
+        sheetQuietUntil = Date.now() + 1500;
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
