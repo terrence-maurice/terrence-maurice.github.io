@@ -133,19 +133,31 @@
         p.rotate(f.rot + swirl);
         p.rect(-s / 2, -s / 2, s, s);
         p.pop();
-        // brightest silver flakes get a small star glint
+        // brightest silver flakes get a twinkling glitter sparkle
         if (f.silver && g > glintAt) {
-          var L = s * (3 + g * 4);
-          p.stroke(240, 244, 250, a * 0.75);
-          p.strokeWeight(0.8);
-          p.line(x - L, y, x + L, y);
-          p.line(x, y - L, x, y + L);
-          p.noStroke();
-          p.fill(255, 255, 255, a * 0.18);
-          p.circle(x, y, L * 0.9);
+          var tw = 0.72 + 0.28 * Math.sin(t * 5.5 + f.a * 9);      // each star twinkles at its own rhythm
+          sparkle(x, y, s * (3 + g * 4) * tw, a, f.rot * 0.25 + swirl * 0.5);
         }
       }
     };
+
+    // a glitter star: tight layered glow, four tapered needle rays and four shorter, bluish diagonal rays
+    function sparkle(x, y, L, a, rot) {
+      p.push();
+      p.translate(x, y);
+      p.rotate(rot);
+      p.fill(200, 215, 255, a * 0.06); p.circle(0, 0, L * 0.9);
+      p.fill(235, 242, 255, a * 0.14); p.circle(0, 0, L * 0.45);
+      p.fill(255, 255, 255, a * 0.5);  p.circle(0, 0, L * 0.16);
+      var w = Math.max(0.45, L * 0.045);
+      p.fill(248, 250, 255, a * 0.9);
+      for (var k = 0; k < 4; k++) { p.triangle(0, -w, L, 0, 0, w); p.rotate(Math.PI / 2); }
+      p.rotate(Math.PI / 4);
+      var d = L * 0.42;
+      p.fill(190, 208, 255, a * 0.55);
+      for (var m = 0; m < 4; m++) { p.triangle(0, -w * 0.7, d, 0, 0, w * 0.7); p.rotate(Math.PI / 2); }
+      p.pop();
+    }
 
     document.addEventListener('visibilitychange', function () {
       if (reduce) return;
