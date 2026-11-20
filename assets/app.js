@@ -155,8 +155,7 @@
 
   function renderWork(w) {
     var h = '<article class="work"' + (w.id ? ' id="work-' + w.id + '" data-work="' + w.id + '"' : '') + '>';
-    // a work with a print sheet: the title is the link that slides the sheet out
-    h += '<h3 class="work-title">' + (w.print ? '<a class="work-link" href="#/famu-cas/' + w.id + '" data-print-open>' + L(w.title) + '</a>' : L(w.title)) + '</h3>';
+    h += '<h3 class="work-title">' + L(w.title) + '</h3>';
     if (w.page) h += '<a class="text-link" href="#/text/' + w.id + '">Text <span aria-hidden="true">→</span></a>';
     if (w.meta) h += '<p class="work-meta">' + L(w.meta) + '</p>';
     if (w.video) h += videoEl(w.video, plain(w.title));
@@ -275,11 +274,11 @@
 
   /* ---------- print sheet (Smrt auta) ----------
      Prapor vyjede z horní lišty jako papír z tiskárny, skoro přes celou šířku okna. Dá se v něm scrollovat dolů;
-     když dojede na konec, zmizí a pod ním je zase kapitola. Spouští se kliknutím na název díla, na tlačítko roku
+     když dojede na konec, zmizí a pod ním je zase kapitola. Spouští se kliknutím na tlačítko roku
      jeho sekce („2024 Zimní“), odkazem #/famu-cas/<id> a jednou při každém otevření kapitoly, když doscrollujete
      k jeho sekci („2024 Zimní klauzura“).
      The banner slides out of the top bar like paper from a printer, almost as wide as the window. You scroll down
-     through it; once its end has passed, it disappears and the chapter is back. It opens from the work title, the
+     through it; once its end has passed, it disappears and the chapter is back. It opens from the
      year button of its section, a #/famu-cas/<id> link, and once per chapter visit when you scroll to its section. */
   var sheet = null, sheetOpener = null, sheetDone = {}, sheetWatch = [];
   var sheetQuietUntil = 0;     // a year button's smooth scroll passing over a section doesn't open its sheet
@@ -351,7 +350,6 @@
   }
 
   // chapter wiring for each work with a print sheet:
-  // - its title opens the sheet;
   // - the year button of its section (e.g. "2024 Zimní") jumps to the section and opens the sheet;
   // - scrolling down to its section (heading reaches the middle of the screen) opens it once per chapter visit.
   function checkSheets() {
@@ -361,7 +359,7 @@
       var r = w.section.getBoundingClientRect();
       if (!w.preloaded && r.top < vh + 1500) { w.preloaded = true; var im = new Image(); im.src = w.src; }
       // the section heading has reached the middle of the screen and the section still fills the middle
-      if (!sheetDone[w.id] && r.top <= vh * 0.5 && r.bottom > vh * 0.5) openSheet(w.id, document.querySelector('#work-' + w.id + ' [data-print-open]'));
+      if (!sheetDone[w.id] && r.top <= vh * 0.5 && r.bottom > vh * 0.5) openSheet(w.id, null);
     });
   }
   window.addEventListener('scroll', checkSheets, { passive: true });
@@ -372,8 +370,6 @@
       var id = el.getAttribute('data-work');
       var f = findWork(id);
       if (!f || !f.work.print) return;
-      var link = el.querySelector('[data-print-open]');
-      link.addEventListener('click', function (e) { e.preventDefault(); openSheet(id, link); });
       var section = el.closest('.period');
       if (!section) return;
       section.setAttribute('data-sheet-for', id);
@@ -522,7 +518,7 @@
     if (el) {
       el.scrollIntoView({ block: 'start' });
       if (fromText) sheetDone[workId] = true;
-      else openSheet(workId, el.querySelector('[data-print-open]'));
+      else openSheet(workId, null);
     }
   }
 

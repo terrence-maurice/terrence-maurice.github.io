@@ -182,8 +182,6 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
 .work-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(32px, 3.6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 8px; }
 .work-meta { color: var(--muted); margin: 0 0 22px; }
 .work-title + .video-wrap, .work-title + .gallery, .work-title + .tracks { margin-top: 26px; }
-.work-link { text-decoration: none; transition: color .25s ease; }
-.work-link:hover { text-decoration: underline; text-decoration-thickness: 2px; }
 .text-link {
   display: inline-flex; gap: 8px; align-items: baseline; margin: 2px 0 26px;
   font-family: var(--font-display); font-size: var(--fs-h2); letter-spacing: -0.01em; text-decoration: none; color: var(--accent);
