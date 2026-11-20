@@ -385,9 +385,9 @@
     var f = findWork(id);
     if (!f || !f.work.page) return renderHome();
     var back = '<a class="back-link" href="#/' + f.chapter + '/' + id + '"><span class="arrow" aria-hidden="true">←</span>' + L(f.work.title) + '</a>';
+    // the text sits on a sheet of paper, set like the author's PDF (the title is inside the text)
     return '' +
-      '<div class="page-head">' + back +
-        '<h1 class="display-xl display-gallery">' + L(f.work.title) + '</h1></div>' +
+      '<div class="page-head page-head-text">' + back + '</div>' +
       '<article class="text-page" lang="cs">' + f.work.page.join('') + '</article>' +
       '<div class="page-end">' + back + '</div>';
   }
