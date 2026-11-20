@@ -23,7 +23,7 @@ var ABOUT = {
   practice: [
     { title: { cs: 'Mentoring', en: 'Mentoring' },
       text: { cs: 'pod industry comp artist <strong>Levent Haseki</strong> (IEU Izmir)', en: 'under industry comp artist <strong>Levent Haseki</strong> (IEU Izmir)' } },
-    { title: { cs: 'Humří chlapec <span class="muted">(premiéra 2027)</span>', en: 'Humří chlapec / Lobster Boy <span class="muted">(premiere 2027)</span>' },
+    { title: { cs: 'Humří chlapec <span class="muted">(2025)</span>', en: 'Humří chlapec / Lobster Boy <span class="muted">(2025)</span>' },
       text: { cs: 'klauzurní autorský film o klukovi, jenž má možná trochu moc starostlivé rodiče a plné zuby života ve vaně',
               en: 'an auteur klauzura film about a boy whose parents may be a little too caring and who is fed up with life in the bathtub' } },
     { title: { cs: 'Light instalace', en: 'Light installation' },
