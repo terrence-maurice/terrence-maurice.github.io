@@ -105,7 +105,7 @@
 
   /* Galerie pohyblivého obrazu: všechna videa z ostatních kapitol (stejné soubory), seskupená podle roku sekce.
      Moving-image gallery: every video from the other chapters (same files), grouped by the year of the section it sits in. */
-  var GALERIE_TITLE = { cs: 'GALERIE POHYBLIVÉHO OBRAZU', en: 'GALERIE POHYBLIVÉHO OBRAZU' };
+  var GALERIE_TITLE = { cs: 'Galerie pohyblivého obrazu', en: 'Galerie pohyblivého obrazu' };
 
   function galleryChapter() {
     var byYear = {};

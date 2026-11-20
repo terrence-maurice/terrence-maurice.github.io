@@ -11,7 +11,7 @@ var CONTACT = {
 var ABOUT = {
   role: { cs: 'Vizuální umělec, filmař', en: 'Visual artist, filmmaker' },
   // bio jen česky (text od autorky); zobrazuje se i v EN režimu, dokud nedodá anglickou verzi
-  lead: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií. Je důležité odkazovat na kořeny pohyblivého obrazu a dění v současné radikalizující se společnosti.',
+  lead: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií, ať už v galerijním prostředí nebo v projekci. Je důležité odkazovat na kořeny pohyblivého obrazu a dění v současné radikalizující se společnosti.',
   study: [
     { title: 'FAMU CAS', when: { cs: '2023–dnes', en: '2023–present' },
       text: { cs: 'Bakalářské studium (BcA.)', en: 'Bachelor studies (BcA.)' } },
