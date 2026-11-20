@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="cs" data-lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tereza Muric — portfolio</title>
+  <meta name="description" content="Tereza Muric — vizuální umělec, filmař. Portfolio: FAMU CAS a volná tvorba.">
+  <meta name="theme-color" content="#121212">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..600&family=Instrument+Sans:ital,wght@0,400..600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    try { var l = localStorage.getItem('lang'); if (l === 'en' || l === 'cs') { document.documentElement.setAttribute('data-lang', l); document.documentElement.lang = l; } } catch (e) {}
+  </script>
+</head>
+<body>
+  <canvas id="sparkle" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <div class="brand">
+      <a href="#/" class="brand-name">Tereza Muric</a>
+      <div class="crumb">
+        <a href="#/" class="back" id="back-arrow" hidden>
+          <span aria-hidden="true">←</span>
+          <span class="sr-only"><span class="l-cs">Zpět do hlavního menu</span><span class="l-en">Back to main menu</span></span>
+        </a>
+        <span id="crumb-label"></span>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="lang" role="group" aria-label="Jazyk / Language">
+        <button type="button" data-set-lang="cs">CZ</button><span aria-hidden="true">/</span><button type="button" data-set-lang="en">EN</button>
+      </div>
+      <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">
+        <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="sr-only">Menu</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="menu-overlay" id="menu-overlay" hidden></div>
+  <nav class="menu" id="menu" aria-label="Menu" inert>
+    <button type="button" class="menu-close" id="menu-close">
+      <span aria-hidden="true">×</span><span class="sr-only"><span class="l-cs">Zavřít menu</span><span class="l-en">Close menu</span></span>
+    </button>
+    <ul>
+      <li><a href="#/" data-route=""><span class="l-cs">O mně</span><span class="l-en">About me</span></a></li>
+      <li><a href="#/famu-cas" data-route="famu-cas">FAMU CAS</a></li>
+      <li><a href="#/volna-tvorba" data-route="volna-tvorba"><span class="l-cs">Volná tvorba</span><span class="l-en">Independent work</span></a></li>
+      <li><a href="#/kontakt" data-route="kontakt"><span class="l-cs">Kontakt</span><span class="l-en">Contact</span></a></li>
+    </ul>
+    <div class="menu-foot">
+      <a href="mailto:tessabaggins@gmail.com">tessabaggins@gmail.com</a>
+      <a href="tel:+420775995151">+420 775 995 151</a>
+    </div>
+  </nav>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="site-foot">
+    <span>© Tereza Muric</span>
+    <a href="mailto:tessabaggins@gmail.com">tessabaggins@gmail.com</a>
+    <a href="tel:+420775995151">+420 775 995 151</a>
+  </footer>
+
+  <script src="assets/content.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/sparkle.js"></script>
+</body>
+</html>

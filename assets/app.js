@@ -1,0 +1,314 @@
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var app = document.getElementById('app');
+
+  /* ---------- helpers ---------- */
+  function L(o, tag) {
+    if (o == null) return '';
+    if (typeof o === 'string') return o;
+    tag = tag || 'span';
+    return '<' + tag + ' class="l-cs" lang="cs">' + o.cs + '</' + tag + '>' +
+           '<' + tag + ' class="l-en" lang="en">' + o.en + '</' + tag + '>';
+  }
+  function paras(o) {
+    if (!o) return '';
+    return '<div class="l-cs" lang="cs">' + o.cs.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>' +
+           '<div class="l-en" lang="en">' + o.en.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>';
+  }
+  function lang() { return root.getAttribute('data-lang') === 'en' ? 'en' : 'cs'; }
+  function tr(cs, en) { return lang() === 'en' ? en : cs; }
+  function plain(o) { return typeof o === 'string' ? o : (o ? o[lang()] : ''); }
+  function stripTags(s) { return String(s).replace(/<[^>]+>/g, ''); }
+
+  /* ---------- language ---------- */
+  function setLang(l) {
+    root.setAttribute('data-lang', l);
+    root.lang = l;
+    try { localStorage.setItem('lang', l); } catch (e) {}
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-set-lang') === l));
+    });
+    updateDynamicLabels();
+  }
+  document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+    b.addEventListener('click', function () { setLang(b.getAttribute('data-set-lang')); });
+  });
+
+  /* ---------- menu ---------- */
+  var menu = document.getElementById('menu');
+  var menuBtn = document.getElementById('menu-btn');
+  var overlay = document.getElementById('menu-overlay');
+  function openMenu() {
+    menu.classList.add('open'); menu.removeAttribute('inert');
+    overlay.hidden = false; requestAnimationFrame(function () { overlay.classList.add('show'); });
+    menuBtn.setAttribute('aria-expanded', 'true');
+    var first = menu.querySelector('a'); if (first) first.focus({ preventScroll: true });
+  }
+  function closeMenu(returnFocus) {
+    if (!menu.classList.contains('open')) return;
+    menu.classList.remove('open'); menu.setAttribute('inert', '');
+    overlay.classList.remove('show'); setTimeout(function () { overlay.hidden = true; }, 350);
+    menuBtn.setAttribute('aria-expanded', 'false');
+    if (returnFocus) menuBtn.focus({ preventScroll: true });
+  }
+  menuBtn.addEventListener('click', function () { menu.classList.contains('open') ? closeMenu(true) : openMenu(); });
+  document.getElementById('menu-close').addEventListener('click', function () { closeMenu(true); });
+  overlay.addEventListener('click', function () { closeMenu(true); });
+  menu.addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(true); });
+
+  /* ---------- pages ---------- */
+  function renderHome() {
+    var a = ABOUT;
+    var study = a.study.map(function (s) {
+      return '<li><h3>' + L(s.title) + ' <span class="when">' + L(s.when) + '</span></h3><p>' + L(s.text) + '</p></li>';
+    }).join('');
+    var practice = a.practice.map(function (p) {
+      return '<li><h3>' + L(p.title) + '</h3><p>' + L(p.text) + '</p></li>';
+    }).join('');
+    var skills = a.skills.map(function (s) {
+      return '<li><strong>' + s.name + '</strong>' + (s.note ? ' <span class="muted">(' + L(s.note) + ')</span>' : '') + '</li>';
+    }).join('');
+    var langs = a.languages.map(function (l) { return '<li>' + L(l) + '</li>'; }).join('');
+
+    return '' +
+      '<section class="hero">' +
+        '<p class="kicker">' + L(a.role) + ' · ' + L(CONTACT.city) + '</p>' +
+        '<h1 class="display-xl">Tereza<br>Muric</h1>' +
+        '<p class="lead">' + L(a.lead) + '</p>' +
+      '</section>' +
+      '<nav class="chapter-index" aria-label="' + tr('Kapitoly', 'Chapters') + '">' +
+        chapterLink('#/famu-cas', { cs: 'FAMU CAS', en: 'FAMU CAS' }, { cs: '2023 — 2025', en: '2023 — 2025' }) +
+        chapterLink('#/volna-tvorba', { cs: 'Volná tvorba', en: 'Independent work' }, { cs: '2022', en: '2022' }) +
+        chapterLink('#/kontakt', { cs: 'Kontakt', en: 'Contact' }, { cs: 'e-mail, telefon', en: 'e-mail, phone' }) +
+      '</nav>' +
+      '<section class="cv" aria-label="CV">' +
+        '<div class="cv-col"><h2 class="cv-head">' + L({ cs: 'Studium', en: 'Education' }) + '</h2><ul class="cv-list">' + study + '</ul>' +
+          '<h2 class="cv-head">' + L({ cs: 'Dovednosti', en: 'Skills' }) + '</h2><ul class="cv-skills">' + skills + '</ul>' +
+          '<ul class="cv-skills cv-langs">' + langs + '</ul></div>' +
+        '<div class="cv-col"><h2 class="cv-head">' + L({ cs: 'Praxe', en: 'Experience' }) + '</h2><ul class="cv-list">' + practice + '</ul></div>' +
+      '</section>';
+  }
+
+  function chapterLink(href, title, sub) {
+    return '<a class="chapter-link" href="' + href + '"><span class="chapter-name">' + L(title) + '</span>' +
+      '<span class="chapter-sub">' + L(sub) + '</span><span class="chapter-arrow" aria-hidden="true">→</span></a>';
+  }
+
+  function backLink() {
+    return '<a class="back-link" href="#/"><span class="arrow" aria-hidden="true">←</span>' +
+      L({ cs: 'Hlavní menu', en: 'Main menu' }) + '</a>';
+  }
+
+  function renderChapter(key) {
+    var ch = CHAPTERS[key];
+    var idx = ch.sections.map(function (s, i) {
+      return '<button type="button" class="year-jump" data-jump="sec-' + i + '">' + s.year +
+        (s.season ? ' <span class="muted">' + L(shortSeason(s.season)) + '</span>' : '') + '</button>';
+    }).join('');
+    var body = ch.sections.map(function (s, i) { return renderSection(s, key, i); }).join('');
+    return '' +
+      '<div class="page-head">' + backLink() +
+        '<h1 class="display-xl">' + L(ch.title) + '</h1>' +
+        (ch.sections.length > 1 ? '<nav class="year-index" aria-label="' + tr('Roky', 'Years') + '">' + idx + '</nav>' : '') +
+      '</div>' + body +
+      '<div class="page-end">' + backLink() + '</div>';
+  }
+
+  function shortSeason(s) {
+    var cs = s.cs.replace(' klauzura', '').replace(' — Cinema and Digital Media', '');
+    var en = s.en.replace(' klauzura', '').replace(' — Cinema and Digital Media', '');
+    return { cs: cs, en: en };
+  }
+
+  function renderSection(s, key, i) {
+    return '<section class="period" id="sec-' + i + '">' +
+      '<header class="period-head"><h2 class="year">' + s.year + '</h2>' +
+        (s.season ? '<span class="season">' + L(s.season) + '</span>' : '') + '</header>' +
+      (s.note ? '<p class="period-note">' + L(s.note) + '</p>' : '') +
+      s.works.map(renderWork).join('') +
+    '</section>';
+  }
+
+  function renderWork(w) {
+    var h = '<article class="work">';
+    h += '<h3 class="work-title">' + L(w.title) + '</h3>';
+    if (w.meta) h += '<p class="work-meta">' + L(w.meta) + '</p>';
+    if (w.video) h += videoEl(w.video, plain(w.title));
+    if (w.videos) h += videoGallery(w.videos, w.title);
+    if (w.text || w.textTitle) {
+      h += '<div class="work-text">';
+      if (w.textTitle) h += '<p class="text-title">' + L(w.textTitle) + '</p>';
+      h += paras(w.text);
+      if (w.more) {
+        h += '<details class="more"><summary>' + L(w.moreLabel || { cs: 'Číst dál', en: 'Read more' }) + '</summary>' + paras(w.more) + '</details>';
+      }
+      h += '</div>';
+    }
+    if (w.audio) h += audioList(w.audio);
+    if (w.galleries) h += w.galleries.map(function (g) { return gallery(g, w.title); }).join('');
+    h += '</article>';
+    return h;
+  }
+
+  function videoEl(v, label) {
+    return '<div class="video-wrap"><video controls playsinline preload="none" poster="' + v.poster + '" aria-label="' + stripTags(label) + '">' +
+      '<source src="' + v.src + '" type="video/mp4"></video></div>';
+  }
+
+  function gallery(g, workTitle) {
+    var label = stripTags(plain(g.title || workTitle));
+    var slides = g.images.map(function (name, i) {
+      return '<div class="slide"><img ' + (i === 0 ? 'src' : 'data-src') + '="' + g.base + name + '.webp" alt="' + label + ' — ' + (i + 1) + '/' + g.images.length + '" decoding="async"' + (i === 0 ? ' loading="lazy"' : '') + '></div>';
+    }).join('');
+    return '<figure class="gallery" data-gallery data-count="' + g.images.length + '">' +
+      '<figcaption class="gallery-head">' +
+        '<span class="gallery-title">' + (g.title ? L(g.title) : '') + '</span>' +
+        '<span class="gallery-count"><span data-idx>1</span> / ' + g.images.length + '</span>' +
+      '</figcaption>' +
+      '<div class="gallery-stage" tabindex="0" role="button" data-label-cs="Další obrázek" data-label-en="Next image">' +
+        '<div class="gallery-track">' + slides + '</div>' +
+      '</div>' +
+      '<p class="gallery-hint">' + L({ cs: 'Klikněte na obrázek pro další →', en: 'Click the image for the next one →' }) + '</p>' +
+    '</figure>';
+  }
+
+  function videoGallery(list, title) {
+    var label = stripTags(plain(title));
+    var slides = list.map(function (v, i) {
+      return '<div class="slide"><video controls playsinline preload="none" poster="' + v.poster + '" aria-label="' + label + ' ' + (i + 1) + '/' + list.length + '"><source src="' + v.src + '" type="video/mp4"></video></div>';
+    }).join('');
+    return '<figure class="gallery video-gallery" data-gallery data-video data-count="' + list.length + '">' +
+      '<div class="gallery-stage"><div class="gallery-track">' + slides + '</div></div>' +
+      '<figcaption class="gallery-head">' +
+        '<button type="button" class="vg-btn" data-prev><span aria-hidden="true">←</span><span class="sr-only">' + L({ cs: 'Předchozí', en: 'Previous' }) + '</span></button>' +
+        '<span class="gallery-count">' + L({ cs: 'Záznam', en: 'Clip' }) + ' <span data-idx>1</span> / ' + list.length + '</span>' +
+        '<button type="button" class="vg-btn" data-next><span aria-hidden="true">→</span><span class="sr-only">' + L({ cs: 'Další', en: 'Next' }) + '</span></button>' +
+      '</figcaption>' +
+    '</figure>';
+  }
+
+  function audioList(a) {
+    return '<ol class="tracks">' + a.tracks.map(function (t, i) {
+      return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
+        '<span class="track-name">' + t[1] + '</span>' +
+        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + t[1] + '"></audio></li>';
+    }).join('') + '</ol>';
+  }
+
+  function renderContact() {
+    return '' +
+      '<div class="page-head">' + backLink() +
+        '<h1 class="display-xl">' + L({ cs: 'Kontakt', en: 'Contact' }) + '</h1></div>' +
+      '<section class="contact">' +
+        '<p class="contact-label">E-mail</p><a class="contact-big" href="mailto:' + CONTACT.email + '">' + CONTACT.email + '</a>' +
+        '<p class="contact-label">' + L({ cs: 'Telefon', en: 'Phone' }) + '</p><a class="contact-big" href="tel:' + CONTACT.phoneHref + '">' + CONTACT.phone + '</a>' +
+        '<p class="contact-label">' + L({ cs: 'Místo', en: 'Location' }) + '</p><p class="contact-big">' + L(CONTACT.city) + '</p>' +
+      '</section>';
+  }
+
+  /* ---------- galleries behaviour ---------- */
+  function initGalleries(scope) {
+    var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.querySelectorAll('img[data-src]').forEach(function (img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); });
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: '600px 0px' }) : null;
+
+    scope.querySelectorAll('[data-gallery]').forEach(function (g) {
+      var n = +g.getAttribute('data-count');
+      var track = g.querySelector('.gallery-track');
+      var idxEl = g.querySelector('[data-idx]');
+      var stage = g.querySelector('.gallery-stage');
+      var isVideo = g.hasAttribute('data-video');
+      var i = 0;
+
+      if (io && !isVideo) io.observe(g);
+      else g.querySelectorAll('img[data-src]').forEach(function (img) { img.src = img.getAttribute('data-src'); });
+
+      function go(to) {
+        if (isVideo) g.querySelectorAll('video').forEach(function (v) { v.pause(); });
+        i = (to + n) % n;
+        track.style.transform = 'translateX(' + (-100 * i) + '%)';
+        idxEl.textContent = i + 1;
+        g.classList.add('touched');
+      }
+
+      if (isVideo) {
+        g.querySelector('[data-prev]').addEventListener('click', function () { go(i - 1); });
+        g.querySelector('[data-next]').addEventListener('click', function () { go(i + 1); });
+        return;
+      }
+
+      // click = next; swipe left/right = next/prev
+      var startX = null, startY = null, moved = false;
+      stage.addEventListener('pointerdown', function (e) { startX = e.clientX; startY = e.clientY; moved = false; });
+      stage.addEventListener('pointerup', function (e) {
+        if (startX === null) return;
+        var dx = e.clientX - startX, dy = e.clientY - startY;
+        startX = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { moved = true; go(dx < 0 ? i + 1 : i - 1); }
+      });
+      stage.addEventListener('pointercancel', function () { startX = null; });
+      stage.addEventListener('click', function () { if (moved) { moved = false; return; } go(i + 1); });
+      stage.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); go(i - 1); }
+      });
+    });
+
+    scope.querySelectorAll('[data-jump]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var el = document.getElementById(b.getAttribute('data-jump'));
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  function updateDynamicLabels() {
+    var l = lang();
+    document.querySelectorAll('[data-label-cs]').forEach(function (el) { el.setAttribute('aria-label', el.getAttribute('data-label-' + l)); });
+    var route = currentRoute();
+    var crumbs = {
+      '': { cs: 'Portfolio', en: 'Portfolio' },
+      'famu-cas': { cs: 'FAMU CAS', en: 'FAMU CAS' },
+      'volna-tvorba': { cs: 'Volná tvorba', en: 'Independent work' },
+      'kontakt': { cs: 'Kontakt', en: 'Contact' }
+    };
+    var c = crumbs[route] || crumbs[''];
+    document.getElementById('crumb-label').textContent = c[l];
+    document.title = route ? c[l] + ' — Tereza Muric' : 'Tereza Muric — ' + tr('vizuální umělec, filmař', 'visual artist, filmmaker');
+  }
+
+  /* ---------- router ---------- */
+  function currentRoute() {
+    var r = (location.hash || '').replace(/^#\/?/, '').split('/')[0];
+    return (r === 'famu-cas' || r === 'volna-tvorba' || r === 'kontakt') ? r : '';
+  }
+
+  var lastRoute = null;
+  function render() {
+    var r = currentRoute();
+    if (r === lastRoute) return;
+    lastRoute = r;
+    if (r === 'famu-cas' || r === 'volna-tvorba') app.innerHTML = renderChapter(r);
+    else if (r === 'kontakt') app.innerHTML = renderContact();
+    else app.innerHTML = renderHome();
+    document.getElementById('back-arrow').hidden = (r === '');
+    document.querySelectorAll('.menu a[data-route]').forEach(function (a) {
+      if (a.getAttribute('data-route') === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    initGalleries(app);
+    updateDynamicLabels();
+    window.scrollTo(0, 0);
+    app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+  }
+
+  window.addEventListener('hashchange', render);
+  setLang(lang());
+  render();
+})();
