@@ -12,7 +12,7 @@ var ABOUT = {
   role: { cs: 'Vizuální umělec, filmař', en: 'Visual artist, filmmaker' },
   // bio jen česky (text od autorky); zobrazuje se i v EN režimu, dokud nedodá anglickou verzi
   lead: {
-    cs: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií (analog with digital, digital with analog), ať už v galerijním prostředí nebo v projekci. Považuji za zásadní odkazovat na kořeny pohyblivého obrazu a reagovat na dění v současné radikalizující se společnosti.',
+    cs: 'Vizuální umělkyně a filmařka z Prahy. Fascinuje mě aplikace videoklipové estetiky 20. století do filmového vyprávění, průzkum vztahů mezi technologií, nástrojem a námi. Pracuji s estetikou fúze starých a současných médií (analog s digitálem, digitál s analogem), ať už v galerijním prostředí nebo v projekci. Považuji za zásadní odkazovat na kořeny pohyblivého obrazu a reagovat na dění v současné radikalizující se společnosti.',
     en: 'Visual artist and filmmaker based in Prague. I am fascinated by applying 20th-century music video aesthetics to film storytelling, and by exploring the relationships between technology, the tool and us. I work with an aesthetic that fuses old and contemporary media (analog with digital, digital with analog), whether in a gallery setting or in a projection room. I consider it essential to refer back to the roots of the moving images and to respond to what is happening in today’s radicalising society.'
   },
   study: [
