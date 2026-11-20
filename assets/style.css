@@ -9,6 +9,7 @@
   --warm: #ffd27a;
   --font-display: 'Bricolage Grotesque', 'Kunsthalle-Wien-Display', Helvetica, 'Helvetica Neue', Arial, sans-serif;
   --font-deco: 'Bellota', 'Bricolage Grotesque', Helvetica, Arial, sans-serif;
+  --font-elvish: 'Almendra Display', 'Bellota', Georgia, serif;
   --font-body: 'Instrument Sans', Helvetica, 'Helvetica Neue', Arial, sans-serif;
   --pad: clamp(16px, 3vw, 40px);
   --fs-body: clamp(17px, 1.15vw + 8px, 20px);
@@ -122,9 +123,12 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
 }
 .hero-quote p { margin: 0; }
 /* name and bio fill about 3/4 of the column width (full width on phones);
-   --name-em = width of "Tereza Muric" in em, --name-line-em = width of "Tereza" in em */
-.hero { container-type: inline-size; --name-em: 4.85; --name-line-em: 2.5; }
-.hero-name { white-space: nowrap; font-size: calc(75cqi / var(--name-em)); }
+   --name-em = width of "Tereza Muric" in em, --name-line-em = width of "Tereza" in em (both in Almendra Display) */
+.hero { container-type: inline-size; --name-em: 5.45; --name-line-em: 2.72; }
+.hero-name {
+  font-family: var(--font-elvish); letter-spacing: 0; line-height: 1.08;
+  white-space: nowrap; font-size: calc(75cqi / var(--name-em));
+}
 .hero .lead { max-width: 75cqi; }
 .lead { margin: 0; max-width: 34ch; font-family: var(--font-display); font-size: var(--fs-h2); line-height: 1.15; letter-spacing: -0.01em; }
 
