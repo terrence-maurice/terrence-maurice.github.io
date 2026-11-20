@@ -1,9 +1,11 @@
 :root {
-  --bg: #121212;
+  --bg: #0b1230;
+  --bg-rgb: 11, 18, 48;
+  --silver: #d4dae4;
   --fg: #f0f0f0;
   --muted: rgba(240, 240, 240, 0.55);
   --line: rgba(240, 240, 240, 0.18);
-  --accent: #c9b8ff;
+  --accent: #c3cde0;
   --warm: #ffd27a;
   --font-display: 'Bricolage Grotesque', 'Kunsthalle-Wien-Display', Helvetica, 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Instrument Sans', Helvetica, 'Helvetica Neue', Arial, sans-serif;
@@ -37,8 +39,9 @@ img, video { display: block; max-width: 100%; }
 /* language visibility */
 html[data-lang="cs"] .l-en, html[data-lang="en"] .l-cs { display: none !important; }
 
-/* sparkle canvas */
-#sparkle { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* p5.js glitter background */
+#glitter { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+#glitter canvas { display: block; width: 100% !important; height: 100% !important; }
 main, .site-foot { position: relative; z-index: 1; }
 
 /* ---------- top bar ---------- */
@@ -46,7 +49,7 @@ main, .site-foot { position: relative; z-index: 1; }
   position: fixed; inset: 0 0 auto 0; z-index: 20;
   display: flex; justify-content: space-between; align-items: flex-start;
   padding: calc(var(--pad) * 0.6) var(--pad) 28px;
-  background: linear-gradient(to bottom, rgba(18,18,18,0.96) 55%, rgba(18,18,18,0));
+  background: linear-gradient(to bottom, rgba(var(--bg-rgb), 0.94) 55%, rgba(var(--bg-rgb), 0));
   pointer-events: none;
 }
 .topbar > * { pointer-events: auto; }
@@ -67,12 +70,12 @@ main, .site-foot { position: relative; z-index: 1; }
 .menu-btn:hover .menu-icon i:nth-child(2) { transform: translateX(-4px); }
 
 /* ---------- side menu ---------- */
-.menu-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity .35s ease; }
+.menu-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(3,6,18,0.55); opacity: 0; transition: opacity .35s ease; }
 .menu-overlay.show { opacity: 1; }
 .menu {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 40;
   width: min(560px, 100%);
-  background: #0c0c0c;
+  background: #070c22;
   border-left: 1px solid var(--line);
   padding: calc(var(--pad) * 0.6) var(--pad) var(--pad);
   display: flex; flex-direction: column;
