@@ -385,7 +385,7 @@
     var f = findWork(id);
     if (!f || !f.work.page) return renderHome();
     var back = '<a class="back-link" href="#/' + f.chapter + '/' + id + '"><span class="arrow" aria-hidden="true">←</span>' + L(f.work.title) + '</a>';
-    // the text sits on a sheet of paper, set like the author's PDF (the title is inside the text)
+    // the title is part of the text (as in the author's PDF); the page uses the site's own type
     return '' +
       '<div class="page-head page-head-text">' + back + '</div>' +
       '<article class="text-page" lang="cs">' + f.work.page.join('') + '</article>' +

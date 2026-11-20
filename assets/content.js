@@ -109,9 +109,9 @@ var CHAPTERS = {
                 base: M + 'famu-cas/2024-zimni/smrt-auta/',
                 images: ['img-9476', 'img-9477', 'img-9487', 'img-9489'] }
             ],
-            // text autorky (jen česky) ve formátu jejího PDF, stránka #/text/smrt-auta / the author's text (Czech only), formatted like her PDF
+            // text autorky (jen česky), stránka #/text/smrt-auta / the author's text (Czech only)
             page: [
-              '<h1 class="text-main">SMRT AUTA CO S NÁMA<br>VYRŮSTALO</h1>',
+              '<h1 class="text-main">SMRT AUTA CO S NÁMA VYRŮSTALO</h1>',
               '<p class="text-place">Libeňská synagoga, zimní klauzury 2024/2025</p>',
               '<p class="text-credit"><strong>ELEKTROTECHNICI:</strong> Jiří a Václav Muric</p>',
               '<p class="text-credit"><strong>KONCEPT, VIZUALIZACE, GRAFIKA:</strong> Tereza Muric</p>',
