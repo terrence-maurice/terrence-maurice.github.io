@@ -106,7 +106,7 @@
 
       // light direction sweeps with scroll position and time -> flakes flash
       var t = p.millis() / 1000;
-      var light = t * 0.22 + sy * 0.0045 + high * 0.35 * Math.sin(t * 9);
+      var light = t * 0.22 + sy * 0.0045;
       var sharp = Math.max(4, 26 - spark * 16 - bass * 8);   // wider highlight while scrolling / on bass = more sparkle
       var gain = 0.55 + spark * 0.45;
       var glintAt = 0.7 - spark * 0.22 - high * 0.15;       // more star glints while scrolling / on highs
@@ -129,20 +129,20 @@
         p.pop();
         // brightest silver flakes get a twinkling glitter sparkle
         if (f.silver && g > glintAt) {
-          var tw = 0.72 + 0.28 * Math.sin(t * 5.5 + f.a * 9);      // each star twinkles at its own rhythm
+          var tw = 0.8 + 0.2 * Math.sin(t * 1.8 + f.a * 9);      // each star twinkles at its own rhythm
           sparkle(x, y, s * (3 + g * 4) * tw, a, f.rot * 0.25);
         }
       }
 
       // while a recording plays, glitter stars pop up at random spots; the louder the moment, the more of them
       if (loud > 0.01) {
-        popDebt += Math.pow(loud, 1.6) * 1.2;                // expected new stars this frame
+        popDebt += Math.pow(loud, 1.6) * 0.5;                // expected new stars this frame
         while (popDebt >= 1 && pops.length < 35) {
           popDebt -= 1;
           pops.push({
             x: Math.random() * W, y: Math.random() * H, born: t,
-            life: 0.6 + Math.random() * 1.0, size: 6 + Math.random() * 11 * (0.5 + loud),
-            rot: Math.random() * Math.PI, spin: 0.08 + Math.random() * 0.08   // rad/s around the centre of the screen
+            life: 1.6 + Math.random() * 2.0, size: 6 + Math.random() * 11 * (0.5 + loud),
+            rot: Math.random() * Math.PI, spin: 0.03 + Math.random() * 0.03   // rad/s around the centre of the screen
           });
         }
         if (popDebt > 3) popDebt = 3;

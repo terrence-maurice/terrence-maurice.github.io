@@ -47,7 +47,7 @@
       t.bass = band(30, 220); t.mid = band(220, 2500); t.high = band(2500, 11000);
       t.level = (t.bass + t.mid + t.high) / 3;
     }
-    for (var k in lv) lv[k] += (t[k] - lv[k]) * (t[k] > lv[k] ? 0.5 : 0.08);   // fast attack, slow release
+    for (var k in lv) lv[k] += (t[k] - lv[k]) * (t[k] > lv[k] ? 0.12 : 0.04);   // smooth rise, slow release (no flicker)
     return lv;
   }
 
