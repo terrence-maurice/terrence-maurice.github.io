@@ -136,13 +136,13 @@
 
       // while a recording plays, glitter stars pop up at random spots; the louder the moment, the more of them
       if (loud > 0.01) {
-        popDebt += Math.pow(loud, 1.6) * 7;                  // expected new stars this frame
-        while (popDebt >= 1 && pops.length < 140) {
+        popDebt += Math.pow(loud, 1.6) * 1.2;                // expected new stars this frame
+        while (popDebt >= 1 && pops.length < 35) {
           popDebt -= 1;
           pops.push({
             x: Math.random() * W, y: Math.random() * H, born: t,
-            life: 0.35 + Math.random() * 0.75, size: 7 + Math.random() * 16 * (0.5 + loud),
-            rot: Math.random() * Math.PI
+            life: 0.6 + Math.random() * 1.0, size: 6 + Math.random() * 11 * (0.5 + loud),
+            rot: Math.random() * Math.PI, spin: 0.08 + Math.random() * 0.08   // rad/s around the centre of the screen
           });
         }
         if (popDebt > 3) popDebt = 3;
@@ -151,7 +151,9 @@
         var q = pops[j], age = (t - q.born) / q.life;
         if (age >= 1) { pops.splice(j, 1); continue; }
         var env = Math.sin(Math.PI * age);                     // flash in, fade out
-        sparkle(q.x, q.y, q.size * (0.35 + 0.65 * env), 255 * env, q.rot);
+        var ang = q.spin * (t - q.born), ca = Math.cos(ang), sa = Math.sin(ang);   // a gentle swirl while it lives
+        var ox = q.x - W / 2, oy = q.y - H / 2;
+        sparkle(W / 2 + ox * ca - oy * sa, H / 2 + ox * sa + oy * ca, q.size * (0.35 + 0.65 * env), 220 * env, q.rot + ang * 2);
       }
     };
 
