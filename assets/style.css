@@ -298,8 +298,19 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
 .track-no { color: var(--muted); font-variant-numeric: tabular-nums; }
 .track audio { width: 100%; height: 36px; }
 
-/* waveform per track (assets/sound.js) */
-.wave { grid-column: 2 / -1; height: 40px; margin-top: -4px; cursor: pointer; }
+/* visual tracks (assets/sound.js): number + name, then play button + waveform (the waveform is the seek bar) */
+.track-visual { grid-template-columns: 44px 1fr; gap: 8px 16px; }
+.play-btn {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line);
+  display: grid; place-items: center; color: var(--fg); transition: border-color .25s ease, background-color .25s ease;
+}
+.play-btn:hover { border-color: var(--fg); }
+.play-btn svg { width: 15px; height: 15px; fill: currentColor; }
+.play-btn .i-pause, .track.is-playing .play-btn .i-play { display: none; }
+.track.is-playing .play-btn .i-pause { display: block; }
+.track.is-playing .play-btn { border-color: var(--fg); background: rgba(255, 255, 255, 0.08); }
+.wave { height: 42px; cursor: pointer; }
+.wave:focus-visible { outline-offset: 2px; }
 .wave canvas { display: block; width: 100%; height: 100%; }
 .track.is-playing .track-name { color: #fff; }
 .track.is-playing .track-no { color: var(--accent); }
@@ -330,7 +341,8 @@ a.contact-big:hover { text-decoration: underline; text-decoration-thickness: 2px
   .chapter-sub { display: none; }
   .track { grid-template-columns: 3ch 1fr; }
   .track audio { grid-column: 1 / -1; }
-  .wave { grid-column: 1 / -1; height: 34px; margin-top: 0; }
+  .track-visual { grid-template-columns: 44px 1fr; }
+  .wave { height: 36px; }
   .gallery:not(.video-gallery) .gallery-stage { height: min(70vh, 110vw); }
   .hero { min-height: 52vh; }
   .hero-name span { display: block; }

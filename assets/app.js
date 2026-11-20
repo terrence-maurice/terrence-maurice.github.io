@@ -215,13 +215,26 @@
     '</figure>';
   }
 
-  // `visual: true` adds a waveform to each track and lets the glitter background react to the playing one (assets/sound.js)
+  // `visual: true`: instead of the browser's audio bar each track gets a play button and its waveform (which is the
+  // progress/seek bar), and the glitter background reacts to the playing one (assets/sound.js)
+  var ICON_PLAY = '<svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>';
+  var ICON_PAUSE = '<svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>';
+
   function audioList(a) {
     return '<ol class="tracks"' + (a.visual ? ' data-sound-visual' : '') + '>' + a.tracks.map(function (t, i) {
-      return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
+      var src = a.base + t[0] + '.m4a';
+      if (!a.visual) {
+        return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
+          '<span class="track-name">' + L(t[1]) + '</span>' +
+          '<audio controls preload="none" src="' + src + '" aria-label="' + plain(t[1]) + '"></audio></li>';
+      }
+      var cs = typeof t[1] === 'string' ? t[1] : t[1].cs, en = typeof t[1] === 'string' ? t[1] : t[1].en;
+      return '<li class="track track-visual"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
         '<span class="track-name">' + L(t[1]) + '</span>' +
-        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + plain(t[1]) + '"></audio>' +
-        (a.visual ? '<div class="wave" data-wave="' + t[0] + '"><canvas aria-hidden="true"></canvas></div>' : '') +
+        '<button type="button" class="play-btn" data-play aria-pressed="false" data-label-cs="Přehrát: ' + stripTags(cs) + '" data-label-en="Play: ' + stripTags(en) + '">' + ICON_PLAY + ICON_PAUSE + '</button>' +
+        '<div class="wave" data-wave="' + t[0] + '" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"' +
+          ' data-label-cs="Pozice v nahrávce: ' + stripTags(cs) + '" data-label-en="Position in recording: ' + stripTags(en) + '"><canvas aria-hidden="true"></canvas></div>' +
+        '<audio preload="none" src="' + src + '"></audio>' +
         '</li>';
     }).join('') + '</ol>';
   }

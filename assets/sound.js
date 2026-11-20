@@ -69,7 +69,11 @@
       g.fillRect(i * step, (c.height - h) / 2, bar, h);
     }
     if (prog > 0) { g.fillStyle = '#ffffff'; g.fillRect(Math.round(prog * c.width) - dpr, 0, dpr * 1.5, c.height); }
+    box.setAttribute('aria-valuenow', Math.round(prog * 100));
+    if (a.duration) box.setAttribute('aria-valuetext', clock(a.currentTime) + ' / ' + clock(a.duration));
   }
+
+  function clock(s) { s = Math.floor(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
   function seek(w, ev) {
     var r = w.canvas.getBoundingClientRect(), f = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)), a = w.audio;
@@ -83,23 +87,34 @@
     destroy();
     scope.querySelectorAll('[data-sound-visual]').forEach(function (list) {
       list.querySelectorAll('.track').forEach(function (li) {
-        var audio = li.querySelector('audio'), wbox = li.querySelector('[data-wave]');
+        var audio = li.querySelector('audio'), wbox = li.querySelector('[data-wave]'), btn = li.querySelector('[data-play]');
         var data = wbox && window.WAVEFORMS && window.WAVEFORMS[wbox.getAttribute('data-wave')];
         if (data) {
           var w = { canvas: wbox.querySelector('canvas'), audio: audio, data: data };
           waves.push(w);
           wbox.addEventListener('click', function (ev) { seek(w, ev); });
+          wbox.addEventListener('keydown', function (ev) {          // the waveform is the seek bar: arrows = ±5 s
+            var d = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[ev.key];
+            if (ev.key === 'Home' || ev.key === 'End' || d) {
+              ev.preventDefault();
+              if (!audio.duration) return;
+              audio.currentTime = ev.key === 'Home' ? 0 : ev.key === 'End' ? audio.duration - 0.5 : Math.min(audio.duration, Math.max(0, audio.currentTime + d));
+              drawWave(w);
+            }
+          });
           audio.addEventListener('timeupdate', function () { drawWave(w); });
           audio.addEventListener('loadedmetadata', function () { drawWave(w); });
           drawWave(w);
         }
+        if (btn) btn.addEventListener('click', function () { if (audio.paused) audio.play(); else audio.pause(); });
         audio.addEventListener('play', function () {
           list.querySelectorAll('audio').forEach(function (o) { if (o !== audio) o.pause(); });   // one recording at a time
           current = audio;
           connect(audio);
           li.classList.add('is-playing');
+          if (btn) btn.setAttribute('aria-pressed', 'true');
         });
-        function stop() { li.classList.remove('is-playing'); }
+        function stop() { li.classList.remove('is-playing'); if (btn) btn.setAttribute('aria-pressed', 'false'); }
         audio.addEventListener('pause', stop);
         audio.addEventListener('ended', stop);
       });
