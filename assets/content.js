@@ -188,8 +188,8 @@ var CHAPTERS = {
       {
         year: '2025', season: { cs: 'Erasmus Izmir — Cinema and Digital Media', en: 'Erasmus Izmir — Cinema and Digital Media' },
         note: {
-          cs: 'IEU Cinema and Digital Media (Fall Semester 2025), Erasmus program v Izmiru, Turecko. Mentoring pod industry comp artist Levent Haseki (IEU Izmir).',
-          en: 'IEU Cinema and Digital Media (Fall Semester 2025), Erasmus programme in Izmir, Turkey. Mentoring under industry comp artist Levent Haseki (IEU Izmir).'
+          cs: 'IEU Cinema and Digital Media (Fall Semester 2025), Erasmus program v Izmiru, Turecko.',
+          en: 'IEU Cinema and Digital Media (Fall Semester 2025), Erasmus programme in Izmir, Turkey.'
         },
         works: [
           {
