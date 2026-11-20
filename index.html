@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..600&family=Instrument+Sans:ital,wght@0,400..600;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Bellota:ital,wght@1,400&family=Almendra+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=20">
+  <link rel="stylesheet" href="assets/style.css?v=21">
   <script>
     try { var l = localStorage.getItem('lang'); if (l === 'en' || l === 'cs') { document.documentElement.setAttribute('data-lang', l); document.documentElement.lang = l; } } catch (e) {}
   </script>
@@ -34,13 +34,13 @@
         <button type="button" data-set-lang="cs">CZ</button><span aria-hidden="true">/</span><button type="button" data-set-lang="en">EN</button>
       </div>
       <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">
-        <!-- ikonka menu: svislý pruh 16mm filmu, tenké linky (okraje, perforace po obou stranách, políčka) / menu icon: an upright strip of 16 mm film in thin lines (edges, perforations on both sides, frames) -->
-        <svg class="menu-icon" viewBox="0 0 30 40" aria-hidden="true">
-          <defs><clipPath id="film-clip"><rect x="2.5" y="0" width="25" height="40"/></clipPath></defs>
-          <path class="film-line" d="M3 0.5V39.5M27 0.5V39.5"/>
+        <!-- ikonka menu: jedno políčko 16mm filmu tenkou linkou (okraje, perforace, okénko), při najetí film běží / menu icon: a single 16 mm film frame in thin lines (edges, perforations, window); on hover the film runs -->
+        <svg class="menu-icon" viewBox="0 0 30 18" aria-hidden="true">
+          <defs><clipPath id="film-clip"><rect x="2.5" y="0" width="25" height="18"/></clipPath></defs>
+          <path class="film-line" d="M3 0.5V17.5M27 0.5V17.5"/>
           <g clip-path="url(#film-clip)"><g class="film-run">
-            <path class="film-line" d="M4.9 -8.5h2v3.5h-2zM4.9 5h2v3.5h-2zM4.9 18.5h2v3.5h-2zM4.9 32h2v3.5h-2zM4.9 45.5h2v3.5h-2zM23.1 -8.5h2v3.5h-2zM23.1 5h2v3.5h-2zM23.1 18.5h2v3.5h-2zM23.1 32h2v3.5h-2zM23.1 45.5h2v3.5h-2z"/>
-            <path class="film-line" d="M8.8 -12h12.4v10.5h-12.4zM8.8 1.5h12.4v10.5h-12.4zM8.8 15h12.4v10.5h-12.4zM8.8 28.5h12.4v10.5h-12.4zM8.8 42h12.4v10.5h-12.4z"/>
+            <path class="film-line" d="M4.9 -13h2v3.5h-2zM4.9 0.5h2v3.5h-2zM4.9 14h2v3.5h-2zM4.9 27.5h2v3.5h-2zM23.1 -13h2v3.5h-2zM23.1 0.5h2v3.5h-2zM23.1 14h2v3.5h-2zM23.1 27.5h2v3.5h-2z"/>
+            <path class="film-line" d="M8.8 -9.75h12.4v10.5h-12.4zM8.8 3.75h12.4v10.5h-12.4zM8.8 17.25h12.4v10.5h-12.4zM8.8 30.75h12.4v10.5h-12.4z"/>
           </g></g>
         </svg>
         <span class="sr-only">Menu</span>
