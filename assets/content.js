@@ -231,6 +231,7 @@ var CHAPTERS = {
             title: { cs: 'Zvuky Izmiru', en: 'Sounds of Izmir' },
             audio: {
               base: M + 'famu-cas/2025-erasmus/zvuky-izmiru/',
+              visual: true,    // moře zvuku + tvar každé nahrávky (assets/sound.js, assets/waveforms.js)
               tracks: [
                 ['131-sk-57', '131. Sk. 57'],
                 ['anil-izci-kuafor-washing-blues-with-4-figs', 'Anıl İzci Kuaför – washing blues with 4 figs'],

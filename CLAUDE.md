@@ -10,12 +10,14 @@ To preview, serve the repo root with any static file server and open `http://loc
 
 ## Architecture
 
-- `index.html` is the shell: top bar (crumb, CZ/EN switch, menu button), the slide-in menu (hard-coded `<li>` items), an empty `<main id="app">` and the footer. It loads the scripts in this order: `content.js`, `app.js`, p5.js (cdnjs), `glitter.js`.
+- `index.html` is the shell: top bar (crumb, CZ/EN switch, menu button), the slide-in menu (hard-coded `<li>` items), an empty `<main id="app">` and the footer. It loads the scripts in this order: `content.js`, `waveforms.js`, `sound.js`, `app.js`, p5.js (cdnjs), `glitter.js`.
 - `assets/content.js` holds **all content** as globals: `CONTACT`, `ABOUT` (bio `lead`, CV `study` / `practice` / `skills` / `languages`) and `CHAPTERS`. Each chapter has `sections` (`year`, `season`), and each section has `works`. A work can have `title`, `meta`, `video`, `videos`, `textTitle`, `text`, `more`, `audio` and `galleries`. Media paths are built from `M = 'media/'`.
 - `assets/app.js` (one IIFE) renders every page as an HTML string into `#app` on `hashchange`. Then it wires up galleries, the year-jump buttons, and the language-dependent labels (crumb, `document.title`, `aria-label`s).
   - `galerie` is not in `CHAPTERS`. `galleryChapter()` builds it at runtime by collecting every work with `video`/`videos` across all chapters and grouping them by section year.
   - The home page (`renderHome`) contains the quote (hard-coded, in Bellota italic via `--font-deco`), the bio and the chapter list (`chapterLink` calls with hard-coded year ranges). It also renders the CV.
 - `assets/glitter.js` is the p5.js glitter background in `#glitter` (black grain plus silver and dark-blue flakes that react to scrolling). It does nothing if p5 fails to load.
+- `assets/sound.js` (`SoundViz`) visualises audio lists marked `visual: true` in `content.js` (Sounds of Izmir): a three.js r128 particle "sea" (loaded from cdnjs only when such a list is on the page) that ripples with the live Web Audio spectrum of the playing track, plus a clickable waveform per track. `app.js` calls `SoundViz.init(app)` after each render and `SoundViz.destroy()` before it. Only one track of a list plays at a time.
+- `assets/waveforms.js` (`WAVEFORMS`) holds 240 RMS values (0–100) per recording, keyed by the file name without `.m4a`, computed offline from the audio with ffmpeg. Regenerate it when recordings change.
 - `assets/style.css` uses design tokens on `:root` and is dark-only.
 - `media/` holds web-compressed files: H.264 720p `.mp4`, `.webp` images and posters, `.m4a` audio. They are organised as `media/<chapter>/<year-season>/`. Originals live outside the repo, in the parent folder. GitHub limits files to 100 MB and the site to about 1 GB.
 

@@ -215,11 +215,16 @@
     '</figure>';
   }
 
+  // `visual: true` adds the particle "sea of sound" and a waveform for each track (assets/sound.js)
   function audioList(a) {
-    return '<ol class="tracks">' + a.tracks.map(function (t, i) {
+    var sea = a.visual ? '<div class="sound-sea" data-sound-sea><canvas aria-hidden="true"></canvas>' +
+      '<p class="sound-now" data-sound-now aria-live="polite">' + L({ cs: 'Pusťte si nahrávku', en: 'Play a recording' }) + '</p></div>' : '';
+    return sea + '<ol class="tracks"' + (a.visual ? ' data-sound-visual' : '') + '>' + a.tracks.map(function (t, i) {
       return '<li class="track"><span class="track-no">' + String(i + 1).padStart(2, '0') + '</span>' +
         '<span class="track-name">' + L(t[1]) + '</span>' +
-        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + plain(t[1]) + '"></audio></li>';
+        '<audio controls preload="none" src="' + a.base + t[0] + '.m4a" aria-label="' + plain(t[1]) + '"></audio>' +
+        (a.visual ? '<div class="wave" data-wave="' + t[0] + '"><canvas aria-hidden="true"></canvas></div>' : '') +
+        '</li>';
     }).join('') + '</ol>';
   }
 
@@ -500,6 +505,8 @@
     lastRoute = r; lastSub = sub;
     closeSheet();
     if (!samePage) {
+      app.querySelectorAll('audio, video').forEach(function (m) { m.pause(); });
+      if (window.SoundViz) SoundViz.destroy();
       if (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie') app.innerHTML = renderChapter(r);
       else if (r === 'kontakt') app.innerHTML = renderContact();
       else if (r === 'text') app.innerHTML = renderText(sub);
@@ -511,6 +518,7 @@
       sheetDone = {};
       initGalleries(app);
       initSheets(app);
+      if (window.SoundViz) SoundViz.init(app);
       updateDynamicLabels();
       window.scrollTo(0, 0);
       app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
