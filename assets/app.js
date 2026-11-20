@@ -77,7 +77,7 @@
       '<section class="hero">' +
         '<blockquote class="hero-quote"><p>' + L({
           cs: 'Jednou jsi součástí audiovize – navždy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?',
-          en: 'Once you’re part of audiovision – you’re part of audiovision forever. You simply have visions of sound...visions with sound! Get it?'
+          en: 'Once you’re part of audiovision – you are part of it forever. You simply have visions of sound...visions with sound! Get it?'
         }) + '</p></blockquote>' +
         '<h1 class="display-xl hero-name"><span>Tereza</span> <span>Muric</span></h1>' +
         '<p class="lead"' + (typeof a.lead === 'string' ? ' lang="cs"' : '') + '>' + L(a.lead) + '</p>' +
