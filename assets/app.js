@@ -77,11 +77,12 @@
       '<section class="hero">' +
         '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize - navzdy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
         '<h1 class="display-xl">Tereza<br>Muric</h1>' +
-        '<p class="lead">' + L(a.lead) + '</p>' +
+        '<p class="lead"' + (typeof a.lead === 'string' ? ' lang="cs"' : '') + '>' + L(a.lead) + '</p>' +
       '</section>' +
       '<nav class="chapter-index" aria-label="' + tr('Kapitoly', 'Chapters') + '">' +
         chapterLink('#/famu-cas', { cs: 'FAMU CAS', en: 'FAMU CAS' }, { cs: '2023 — 2025', en: '2023 — 2025' }) +
         chapterLink('#/volna-tvorba', { cs: 'Volná tvorba', en: 'Independent work' }, { cs: '2022', en: '2022' }) +
+        chapterLink('#/galerie', GALERIE_TITLE, { cs: '2022 — 2025', en: '2022 — 2025' }) +
         chapterLink('#/kontakt', { cs: 'Kontakt', en: 'Contact' }, { cs: 'e-mail, telefon', en: 'e-mail, phone' }) +
       '</nav>' +
       '<section class="cv" aria-label="CV">' +
@@ -102,8 +103,28 @@
       L({ cs: 'Hlavní menu', en: 'Main menu' }) + '</a>';
   }
 
+  /* Galerie pohyblivého obrazu: všechna videa z ostatních kapitol (stejné soubory), seskupená podle roku sekce.
+     Moving-image gallery: every video from the other chapters (same files), grouped by the year of the section it sits in. */
+  var GALERIE_TITLE = { cs: 'GALERIE POHYBLIVÉH OBRAZU', en: 'GALERIE POHYBLIVÉH OBRAZU' };
+
+  function galleryChapter() {
+    var byYear = {};
+    Object.keys(CHAPTERS).forEach(function (key) {
+      CHAPTERS[key].sections.forEach(function (s) {
+        s.works.forEach(function (w) {
+          if (!w.video && !w.videos) return;
+          (byYear[s.year] = byYear[s.year] || []).push({ title: w.title, video: w.video, videos: w.videos });
+        });
+      });
+    });
+    return {
+      title: GALERIE_TITLE, titleClass: 'display-gallery',
+      sections: Object.keys(byYear).sort().map(function (y) { return { year: y, season: null, works: byYear[y] }; })
+    };
+  }
+
   function renderChapter(key) {
-    var ch = CHAPTERS[key];
+    var ch = key === 'galerie' ? galleryChapter() : CHAPTERS[key];
     var idx = ch.sections.map(function (s, i) {
       return '<button type="button" class="year-jump" data-jump="sec-' + i + '">' + s.year +
         (s.season ? ' <span class="muted">' + L(shortSeason(s.season)) + '</span>' : '') + '</button>';
@@ -111,7 +132,7 @@
     var body = ch.sections.map(function (s, i) { return renderSection(s, key, i); }).join('');
     return '' +
       '<div class="page-head">' + backLink() +
-        '<h1 class="display-xl">' + L(ch.title) + '</h1>' +
+        '<h1 class="display-xl' + (ch.titleClass ? ' ' + ch.titleClass : '') + '">' + L(ch.title) + '</h1>' +
         (ch.sections.length > 1 ? '<nav class="year-index" aria-label="' + tr('Roky', 'Years') + '">' + idx + '</nav>' : '') +
       '</div>' + body +
       '<div class="page-end">' + backLink() + '</div>';
@@ -277,6 +298,7 @@
       '': { cs: 'Portfolio', en: 'Portfolio' },
       'famu-cas': { cs: 'FAMU CAS', en: 'FAMU CAS' },
       'volna-tvorba': { cs: 'Volná tvorba', en: 'Independent work' },
+      'galerie': GALERIE_TITLE,
       'kontakt': { cs: 'Kontakt', en: 'Contact' }
     };
     var c = crumbs[route] || crumbs[''];
@@ -287,7 +309,7 @@
   /* ---------- router ---------- */
   function currentRoute() {
     var r = (location.hash || '').replace(/^#\/?/, '').split('/')[0];
-    return (r === 'famu-cas' || r === 'volna-tvorba' || r === 'kontakt') ? r : '';
+    return (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie' || r === 'kontakt') ? r : '';
   }
 
   var lastRoute = null;
@@ -295,7 +317,7 @@
     var r = currentRoute();
     if (r === lastRoute) return;
     lastRoute = r;
-    if (r === 'famu-cas' || r === 'volna-tvorba') app.innerHTML = renderChapter(r);
+    if (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie') app.innerHTML = renderChapter(r);
     else if (r === 'kontakt') app.innerHTML = renderContact();
     else app.innerHTML = renderHome();
     document.getElementById('back-arrow').hidden = (r === '');
