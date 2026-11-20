@@ -159,6 +159,7 @@
 
     // a glitter star: tight layered glow, four tapered needle rays and four shorter, bluish diagonal rays
     function sparkle(x, y, L, a, rot) {
+      L = Math.min(L, 19);          // max ~1 cm across (38 CSS px at 96 px per inch)
       p.push();
       p.translate(x, y);
       p.rotate(rot);
