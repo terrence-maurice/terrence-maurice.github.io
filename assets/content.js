@@ -197,6 +197,14 @@ var CHAPTERS = {
             video: { src: M + 'famu-cas/2025-erasmus/brejle-dream.mp4', poster: M + 'famu-cas/2025-erasmus/brejle-dream.webp' }
           },
           {
+            title: 'Nuke – beginner level comp artist',
+            video: { src: M + 'famu-cas/2025-erasmus/nuke-showreel.mp4', poster: M + 'famu-cas/2025-erasmus/nuke-showreel.webp' },
+            text: {
+              cs: ['Showreel vznikl během Erasmu na IEU v Izmiru v rámci mentoringu pod vedením industry comp artista Leventa Hasekiho, v předmětu Digital Image Compositing Techniques and Special Effects (CDM 304).'],
+              en: ['The showreel was made during the Erasmus exchange at IEU Izmir, under the mentorship of industry comp artist Levent Haseki, in the course Digital Image Compositing Techniques and Special Effects (CDM 304).']
+            }
+          },
+          {
             title: { cs: 'Zvuky Izmiru', en: 'Sounds of Izmir' },
             audio: {
               base: M + 'famu-cas/2025-erasmus/zvuky-izmiru/',
