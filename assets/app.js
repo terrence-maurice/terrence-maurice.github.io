@@ -76,7 +76,7 @@
     return '' +
       '<section class="hero">' +
         '<blockquote class="hero-quote" lang="cs"><p>Jednou jsi součástí audiovize – navždy jsi součástí audiovize. Máš prostě zvukové vize...vize se zvukem! Kapiš?</p></blockquote>' +
-        '<h1 class="display-xl">Tereza<br>Muric</h1>' +
+        '<h1 class="display-xl hero-name"><span>Tereza</span> <span>Muric</span></h1>' +
         '<p class="lead"' + (typeof a.lead === 'string' ? ' lang="cs"' : '') + '>' + L(a.lead) + '</p>' +
       '</section>' +
       '<nav class="chapter-index" aria-label="' + tr('Kapitoly', 'Chapters') + '">' +
@@ -181,8 +181,21 @@
 
   function gallery(g, workTitle) {
     var label = stripTags(plain(g.title || workTitle));
-    var slides = g.images.map(function (name, i) {
-      return '<div class="slide"><img ' + (i === 0 ? 'src' : 'data-src') + '="' + g.base + name + '.webp" alt="' + label + ' — ' + (i + 1) + '/' + g.images.length + '" decoding="async"' + (i === 0 ? ' loading="lazy"' : '') + '></div>';
+    var slides = g.images.map(function (im, i) {
+      var name = typeof im === 'string' ? im : im.name;
+      var src = g.base + name + '.webp';
+      var alt = label + ' — ' + (i + 1) + '/' + g.images.length;
+      var img = '<img ' + (i === 0 ? 'src' : 'data-src') + '="' + src + '" alt="' + alt + '" decoding="async"' + (i === 0 ? ' loading="lazy"' : '') + '>';
+      if (typeof im === 'object' && im.print) {
+        // tisk: obrázek vyjede shora jako papír z tiskárny a dá se přiblížit / print: slides out from the top like paper, zoomable
+        return '<div class="slide slide-print" data-print>' +
+          '<div class="print-wrap"><span class="print-slot" aria-hidden="true"></span>' +
+            '<div class="print-sheet">' + img + '</div>' +
+            '<button type="button" class="zoom-btn" data-zoom="' + src + '" data-alt="' + alt + '" tabindex="-1">' +
+              '<span aria-hidden="true">⤢</span> ' + L({ cs: 'Přiblížit', en: 'Zoom in' }) + '</button>' +
+          '</div></div>';
+      }
+      return '<div class="slide">' + img + '</div>';
     }).join('');
     return '<figure class="gallery" data-gallery data-count="' + g.images.length + '">' +
       '<figcaption class="gallery-head">' +
@@ -230,6 +243,191 @@
       '</section>';
   }
 
+  /* ---------- gallery sizing ----------
+     Každý obrázek má svůj vlastní formát (nic se neořezává ani nedeformuje). Obrázky jedné galerie mají
+     zhruba stejnou plochu: průměr ploch, které by měly, kdyby každý sám vyplnil scénu.
+     Every image keeps its own aspect ratio (never cropped or stretched). Images in one gallery get roughly
+     the same area: the average of the areas they would have if each filled the stage on its own. */
+  var PRINT_PAD = 12;          // room above and below the print sheet for the printer slot
+  var viewH = window.innerHeight, viewW = window.innerWidth;
+
+  function aspectOf(img) { return img && img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0; }
+
+  function layoutGallery(g) {
+    var stage = g.querySelector('.gallery-stage');
+    var W = stage.clientWidth;
+    if (!W) return;
+    var Hmax = Math.round(viewH * 0.82);
+    var items = [];
+    g.querySelectorAll('.slide').forEach(function (s) {
+      var img = s.querySelector('img');
+      items.push({ s: s, img: img, a: aspectOf(img), print: s.hasAttribute('data-print') });
+    });
+    var normal = items.filter(function (it) { return it.a && !it.print; });
+    var A = 0;
+    normal.forEach(function (it) { var h = Math.min(Hmax, W / it.a); A += h * h * it.a; });
+    if (normal.length) A /= normal.length;
+
+    var baseH = 0;
+    items.forEach(function (it) {
+      var a = it.a || 1.5, h;
+      if (it.print) h = Math.min(Hmax - 2 * PRINT_PAD, W / a);               // the whole sheet, as tall as fits
+      else h = Math.min(A ? Math.sqrt(A / a) : Hmax, Hmax, W / a);
+      var w = Math.round(h * a);
+      h = Math.round(h);
+      var box = it.print ? it.s.querySelector('.print-sheet') : it.img;
+      box.style.width = w + 'px';
+      box.style.height = h + 'px';
+      it.s._h = it.print ? h + 2 * PRINT_PAD : h;
+      if (!it.print) baseH = Math.max(baseH, h);
+    });
+    g._baseH = baseH || Math.min(Hmax, Math.round(W / 1.5));
+    sizeStage(g, g._index ? g._index() : 0);
+  }
+
+  // the stage keeps the height of the gallery's tallest ordinary image; it grows only for the print sheet
+  function sizeStage(g, i) {
+    var s = g.querySelectorAll('.slide')[i];
+    var h = s && s.hasAttribute('data-print') ? Math.max(g._baseH, s._h) : g._baseH;
+    if (h) g.querySelector('.gallery-stage').style.height = h + 'px';
+  }
+
+  var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+  // the print slide "comes out of the printer" every time it becomes the current slide
+  function onSlide(g, s) {
+    g.querySelectorAll('[data-zoom]').forEach(function (b) { b.tabIndex = -1; });
+    if (!s || !s.hasAttribute('data-print')) return;
+    var b = s.querySelector('[data-zoom]');
+    if (b) b.tabIndex = 0;
+    if (!g.classList.contains('touched') || (reduceMotion && reduceMotion.matches)) return;
+    s.classList.remove('printing');
+    void s.offsetWidth;
+    s.classList.add('printing');
+  }
+
+  window.addEventListener('resize', function () {
+    clearTimeout(window._galleryResize);
+    window._galleryResize = setTimeout(function () {
+      // mobile browsers fire resize while the address bar hides; only re-measure on a real size change
+      if (window.innerWidth === viewW && Math.abs(window.innerHeight - viewH) < 160) return;
+      viewW = window.innerWidth; viewH = window.innerHeight;
+      app.querySelectorAll('[data-gallery]:not([data-video])').forEach(layoutGallery);
+      if (zoomer && !zoomer.hidden) setZoom(zoomLevel);
+    }, 120);
+  });
+
+  /* ---------- zoom view (print sheet) ---------- */
+  var zoomer = null, zoomLevel = 1, zoomOpener = null;
+  var ZOOM_LEVELS = [1, 2, 4, 6];
+
+  function buildZoomer() {
+    zoomer = document.createElement('div');
+    zoomer.className = 'zoomer';
+    zoomer.hidden = true;
+    zoomer.setAttribute('role', 'dialog');
+    zoomer.setAttribute('aria-modal', 'true');
+    zoomer.innerHTML = '<div class="zoomer-scroll"><img alt="" draggable="false"></div>' +
+      '<div class="zoomer-bar">' +
+        '<button type="button" data-z="out"><span aria-hidden="true">−</span><span class="sr-only">' + L({ cs: 'Oddálit', en: 'Zoom out' }) + '</span></button>' +
+        '<span class="zoomer-level" aria-live="polite"></span>' +
+        '<button type="button" data-z="in"><span aria-hidden="true">+</span><span class="sr-only">' + L({ cs: 'Přiblížit', en: 'Zoom in' }) + '</span></button>' +
+        '<button type="button" data-z="close"><span aria-hidden="true">×</span><span class="sr-only">' + L({ cs: 'Zavřít', en: 'Close' }) + '</span></button>' +
+      '</div>';
+    document.body.appendChild(zoomer);
+
+    var sc = zoomer.querySelector('.zoomer-scroll');
+    var img = sc.querySelector('img');
+    img.addEventListener('load', function () { if (!zoomer.hidden) setZoom(zoomLevel); });
+
+    // mouse: drag to pan, click to zoom in at that point (at the last level, back to the whole sheet)
+    var drag = null, dragged = false;
+    sc.addEventListener('pointerdown', function (e) {
+      dragged = false;
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, l: sc.scrollLeft, t: sc.scrollTop };
+      e.preventDefault();
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 5) dragged = true;
+      sc.scrollLeft = drag.l - dx; sc.scrollTop = drag.t - dy;
+    });
+    window.addEventListener('pointerup', function () { drag = null; });
+    sc.addEventListener('click', function (e) {
+      if (dragged) { dragged = false; return; }
+      if (e.target !== img) { closeZoom(); return; }
+      var k = ZOOM_LEVELS.indexOf(zoomLevel);
+      setZoom(k < ZOOM_LEVELS.length - 1 ? ZOOM_LEVELS[k + 1] : 1, e.clientX, e.clientY);
+    });
+
+    zoomer.querySelector('[data-z="in"]').addEventListener('click', function () { stepZoom(1); });
+    zoomer.querySelector('[data-z="out"]').addEventListener('click', function () { stepZoom(-1); });
+    zoomer.querySelector('[data-z="close"]').addEventListener('click', closeZoom);
+    zoomer.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.stopPropagation(); closeZoom(); }
+      else if (e.key === '+' || e.key === '=') stepZoom(1);
+      else if (e.key === '-') stepZoom(-1);
+      else if (e.key === 'Tab') {               // keep focus inside the dialog
+        var bs = zoomer.querySelectorAll('button'), first = bs[0], last = bs[bs.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
+  function stepZoom(d) {
+    var k = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, ZOOM_LEVELS.indexOf(zoomLevel) + d));
+    setZoom(ZOOM_LEVELS[k]);
+  }
+
+  function setZoom(z, cx, cy) {
+    var sc = zoomer.querySelector('.zoomer-scroll'), img = sc.querySelector('img');
+    var a = aspectOf(img);
+    if (!a) return;
+    var r = img.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+    if (cx == null) { cx = sr.left + sr.width / 2; cy = sr.top + sr.height / 2; }
+    var px = r.width ? Math.min(1, Math.max(0, (cx - r.left) / r.width)) : 0.5;
+    var py = r.height ? Math.min(1, Math.max(0, (cy - r.top) / r.height)) : 0.5;
+    var cs = getComputedStyle(sc);
+    var availH = sc.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    var availW = sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var fitH = Math.min(availH, availW / a);
+    zoomLevel = z;
+    img.style.height = Math.round(fitH * z) + 'px';
+    img.style.width = Math.round(fitH * z * a) + 'px';
+    var r2 = img.getBoundingClientRect();
+    sc.scrollLeft += r2.left + px * r2.width - cx;
+    sc.scrollTop += r2.top + py * r2.height - cy;
+    zoomer.classList.toggle('zoomed', z > 1);
+    zoomer.querySelector('.zoomer-level').textContent = z + '×';
+    zoomer.querySelector('[data-z="out"]').disabled = z === ZOOM_LEVELS[0];
+    zoomer.querySelector('[data-z="in"]').disabled = z === ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+  }
+
+  function openZoom(btn) {
+    if (!zoomer) buildZoomer();
+    zoomOpener = btn;
+    var img = zoomer.querySelector('img');
+    img.style.width = img.style.height = '';
+    img.src = btn.getAttribute('data-zoom');
+    img.alt = btn.getAttribute('data-alt');
+    zoomer.setAttribute('aria-label', btn.getAttribute('data-alt'));
+    zoomer.hidden = false;
+    root.classList.add('zoom-open');
+    zoomLevel = 1;
+    if (img.complete) setZoom(1);
+    zoomer.querySelector('[data-z="close"]').focus({ preventScroll: true });
+  }
+
+  function closeZoom() {
+    if (!zoomer || zoomer.hidden) return;
+    zoomer.hidden = true;
+    root.classList.remove('zoom-open');
+    if (zoomOpener) zoomOpener.focus({ preventScroll: true });
+  }
+
   /* ---------- galleries behaviour ---------- */
   function initGalleries(scope) {
     var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
@@ -251,12 +449,15 @@
       if (io && !isVideo) io.observe(g);
       else g.querySelectorAll('img[data-src]').forEach(function (img) { img.src = img.getAttribute('data-src'); });
 
+      var slideEls = g.querySelectorAll('.slide');
+
       function go(to) {
         if (isVideo) g.querySelectorAll('video').forEach(function (v) { v.pause(); });
         i = (to + n) % n;
         track.style.transform = 'translateX(' + (-100 * i) + '%)';
         idxEl.textContent = i + 1;
         g.classList.add('touched');
+        if (!isVideo) { onSlide(g, slideEls[i]); sizeStage(g, i); }
       }
 
       if (isVideo) {
@@ -265,7 +466,14 @@
         return;
       }
 
-      // click = next; swipe left/right = next/prev
+      g._index = function () { return i; };
+      g.querySelectorAll('img').forEach(function (img) {
+        img.addEventListener('load', function () { layoutGallery(g); });
+      });
+      layoutGallery(g);
+      onSlide(g, slideEls[0]);
+
+      // click = next; swipe left/right = next/prev; the zoom button opens the zoom view instead
       var startX = null, startY = null, moved = false;
       stage.addEventListener('pointerdown', function (e) { startX = e.clientX; startY = e.clientY; moved = false; });
       stage.addEventListener('pointerup', function (e) {
@@ -275,8 +483,14 @@
         if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { moved = true; go(dx < 0 ? i + 1 : i - 1); }
       });
       stage.addEventListener('pointercancel', function () { startX = null; });
-      stage.addEventListener('click', function () { if (moved) { moved = false; return; } go(i + 1); });
+      stage.addEventListener('click', function (e) {
+        if (moved) { moved = false; return; }
+        var z = e.target.closest('[data-zoom]');
+        if (z) { openZoom(z); return; }
+        go(i + 1);
+      });
       stage.addEventListener('keydown', function (e) {
+        if (e.target.closest('[data-zoom]')) return;
         if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(i + 1); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); go(i - 1); }
       });
@@ -317,6 +531,7 @@
     var r = currentRoute();
     if (r === lastRoute) return;
     lastRoute = r;
+    closeZoom();
     if (r === 'famu-cas' || r === 'volna-tvorba' || r === 'galerie') app.innerHTML = renderChapter(r);
     else if (r === 'kontakt') app.innerHTML = renderContact();
     else app.innerHTML = renderHome();

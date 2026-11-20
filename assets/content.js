@@ -104,7 +104,7 @@ var CHAPTERS = {
             galleries: [
               { title: null,
                 base: M + 'famu-cas/2024-zimni/smrt-auta/',
-                images: ['img-9476', 'img-9477', 'img-9487', 'img-9489', 'novy-lepsi-prapor-pro-tisk-technicak'] }
+                images: ['img-9476', 'img-9477', 'img-9487', 'img-9489', { name: 'novy-lepsi-prapor-pro-tisk-technicak', print: true }] }
             ]
           }
         ]

@@ -121,6 +121,11 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
   overflow-wrap: break-word;
 }
 .hero-quote p { margin: 0; }
+/* name and bio fill about 3/4 of the column width (full width on phones);
+   --name-em = width of "Tereza Muric" in em, --name-line-em = width of "Tereza" in em */
+.hero { container-type: inline-size; --name-em: 4.85; --name-line-em: 2.5; }
+.hero-name { white-space: nowrap; font-size: calc(75cqi / var(--name-em)); }
+.hero .lead { max-width: 75cqi; }
 .lead { margin: 0; max-width: 34ch; font-family: var(--font-display); font-size: var(--fs-h2); line-height: 1.15; letter-spacing: -0.01em; }
 
 .chapter-index { margin: 12vh 0 10vh; border-top: 1px solid var(--line); }
@@ -192,15 +197,67 @@ main.enter > *:nth-child(3) { animation-delay: .12s; }
 .gallery-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 17px; margin-bottom: 10px; }
 .gallery-title { color: var(--fg); }
 .gallery-count { color: var(--muted); font-variant-numeric: tabular-nums; }
-.gallery-stage { position: relative; overflow: hidden; background: rgba(0,0,0,0.45); cursor: e-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.gallery-stage { position: relative; overflow: hidden; cursor: e-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .gallery-track { display: flex; transition: transform .6s cubic-bezier(.2,.7,.1,1); }
-.slide { flex: 0 0 100%; aspect-ratio: 3 / 2; max-height: 82vh; display: grid; place-items: center; }
-.slide img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+.slide { flex: 0 0 100%; display: grid; place-items: center; }
+
+/* image galleries: each picture in its own format, sized by app.js (layoutGallery) */
+.gallery:not(.video-gallery) .gallery-stage { height: min(82vh, 60vw); transition: height .6s cubic-bezier(.2,.7,.1,1); }
+.gallery:not(.video-gallery) .gallery-track { height: 100%; }
+.gallery:not(.video-gallery) .slide { height: 100%; }
+.slide img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+
+/* print sheet: comes out of a printer slot at the top */
+.print-wrap { position: relative; }
+.print-slot {
+  position: absolute; left: -16px; right: -16px; top: -7px; height: 7px; z-index: 2;
+  border-radius: 3px; background: linear-gradient(#2a2c33, #0c0d10);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 3px 8px rgba(0,0,0,0.8);
+}
+.print-sheet { overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.55); }
+.print-sheet img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; }
+.slide-print.printing .print-sheet img { animation: print-out 3.2s linear .45s both; }
+@keyframes print-out {
+  0%   { transform: translateY(-100%); }
+  6%   { transform: translateY(-94%); }   9% { transform: translateY(-94%); }
+  20%  { transform: translateY(-80%); }  23% { transform: translateY(-80%); }
+  36%  { transform: translateY(-62%); }  39% { transform: translateY(-62%); }
+  52%  { transform: translateY(-43%); }  55% { transform: translateY(-43%); }
+  68%  { transform: translateY(-25%); }  71% { transform: translateY(-25%); }
+  84%  { transform: translateY(-9%); }   87% { transform: translateY(-9%); }
+  100% { transform: translateY(0); }
+}
+.zoom-btn {
+  position: absolute; left: 100%; bottom: 0; margin-left: 14px; white-space: nowrap;
+  font-size: 15px; color: var(--fg); padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px;
+  background: rgba(var(--bg-rgb), 0.7); cursor: zoom-in; transition: border-color .25s ease;
+}
+.zoom-btn:hover { border-color: var(--fg); }
+
+/* zoom view */
+html.zoom-open, html.zoom-open body { overflow: hidden; }
+.zoomer { position: fixed; inset: 0; z-index: 60; background: rgba(var(--bg-rgb), 0.96); }
+.zoomer[hidden] { display: none; }
+.zoomer-scroll {
+  position: absolute; inset: 0; overflow: auto; display: flex; padding: 20px 16px 84px;
+  touch-action: pan-x pan-y pinch-zoom; overscroll-behavior: contain; cursor: zoom-in;
+}
+.zoomer.zoomed .zoomer-scroll { cursor: grab; }
+.zoomer-scroll img { margin: auto; flex: none; max-width: none; user-select: none; -webkit-user-select: none; background: #fff; }
+.zoomer-bar {
+  position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 999px;
+  background: rgba(var(--bg-rgb), 0.85);
+}
+.zoomer-bar button { width: 44px; height: 44px; font-size: 26px; line-height: 1; border-radius: 999px; }
+.zoomer-bar button:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+.zoomer-bar button:disabled { opacity: 0.3; cursor: default; }
+.zoomer-level { min-width: 3ch; text-align: center; color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
 .gallery-hint { margin: 10px 0 0; color: var(--muted); font-size: 15px; transition: opacity .4s ease; }
 .gallery.touched .gallery-hint { opacity: 0; }
 
 .video-gallery .gallery-stage { cursor: default; background: #000; }
-.video-gallery .slide { aspect-ratio: 16 / 9; }
+.video-gallery .slide { aspect-ratio: 16 / 9; max-height: 82vh; }
 .video-gallery .slide video { width: 100%; height: 100%; object-fit: contain; }
 .video-gallery .gallery-head { margin: 12px 0 0; justify-content: flex-start; }
 .vg-btn { font-size: 26px; line-height: 1; padding: 4px 6px; transition: transform .25s ease; }
@@ -239,9 +296,12 @@ a.contact-big:hover { text-decoration: underline; text-decoration-thickness: 2px
   .chapter-sub { display: none; }
   .track { grid-template-columns: 3ch 1fr; }
   .track audio { grid-column: 1 / -1; }
-  .slide { aspect-ratio: 4 / 5; }
-  .video-gallery .slide { aspect-ratio: 16 / 9; }
+  .gallery:not(.video-gallery) .gallery-stage { height: min(70vh, 110vw); }
+  .zoom-btn { font-size: 14px; margin-left: 10px; padding: 5px 9px; }
   .hero { min-height: 52vh; }
+  .hero-name span { display: block; }
+  .hero-name { font-size: calc(100cqi / var(--name-line-em)); }
+  .hero .lead { max-width: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
